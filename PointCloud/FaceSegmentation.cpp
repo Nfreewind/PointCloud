@@ -36,14 +36,17 @@ namespace pointcloud {
 					if (!result) continue;
 
 					if (const Kernel::Line_3* s = boost::get<Kernel::Line_3>(&*result)) {
-						std::cout << "point=" << s->point() << std::endl;
-						std::cout << "dir=" << s->direction() << std::endl;
+						//std::cout << "point=" << s->point() << std::endl;
+						//std::cout << "dir=" << s->direction() << std::endl;
 
+						// normalize the direction vector of the intersection line
+						Kernel::Vector_3 ndir(s->direction().dx(), s->direction().dy(), s->direction().dz());
+						ndir /= ndir * ndir;
 
 						// calculate an intersection line on the plane
 						Point2 pt = plane.to_2d(s->point());
-						Point2 pt1 = plane.to_2d(s->point() - Kernel::Vector_3(s->direction().dx(), s->direction().dy(), s->direction().dz()) * 100000);
-						Point2 pt2 = plane.to_2d(s->point() + Kernel::Vector_3(s->direction().dx(), s->direction().dy(), s->direction().dz()) * 100000);
+						Point2 pt1 = plane.to_2d(s->point() - ndir * 100000);
+						Point2 pt2 = plane.to_2d(s->point() + ndir * 100000);
 
 						// create large polygons that are connected via the intersection line
 						Kernel::Vector_2 dir = pt2 - pt1;
