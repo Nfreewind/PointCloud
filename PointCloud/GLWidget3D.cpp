@@ -346,7 +346,7 @@ void GLWidget3D::detect(double probability, double min_points, double epsilon, d
 	}
 	float diagonal = std::sqrt((max_x - min_x) * (max_x - min_x) + (max_y - min_y) * (max_y - min_y) + (max_z - min_z) * (max_z - min_z));
 
-	pointcloud::shape::detect(point_cloud, probability, point_cloud.size() * min_points, diagonal * 0.01 * epsilon, diagonal * 0.01 * cluster_epsilon, normal_threshold, detected_faces, classification);
+	pointcloud::shape::detect(point_cloud, probability, point_cloud.size() * 0.01 * min_points, diagonal * 0.01 * epsilon, diagonal * 0.01 * cluster_epsilon, normal_threshold, detected_faces);
 	std::cout << detected_faces.size() << " faces were detected." << std::endl;
 
 	face_detected = true;
@@ -413,33 +413,37 @@ void GLWidget3D::saveImage(const QString& filename) {
 void GLWidget3D::update3DGeometry() {
 	renderManager.removeObjects();
 
-	// draw points
-	if (show_points) {
+	if (!face_detected) {
 		std::vector<Vertex> vertices;
 		for (int i = 0; i < point_cloud.size(); i++) {
 			glm::vec3& pos = point_cloud[i].first;
-			glm::vec4 color;
-			if (!face_detected) color = glm::vec4(1, 1, 1, 1);
-			else if (show_face_id != -1 && classification[i] != show_face_id) color = glm::vec4(1, 1, 1, 1);
-			else color = getColor(classification[i]);
-
+			glm::vec4 color = glm::vec4(1, 1, 1, 1);
 			glutils::drawBox(0.3, 0.3, 0.3, color, glm::translate(glm::mat4(), pos), vertices);
 		}
 		renderManager.addObject("point_cloud", "", vertices, true);
 	}
-
-	// draw detected faces
-	if (face_detected && show_faces) {
-		std::vector<Vertex> vertices;
+	else {
 		for (int i = 0; i < detected_faces.size(); i++) {
 			if (show_face_id != -1 && show_face_id != detected_faces[i].shape_id) continue;
 
-			glm::vec4 color = getColor(detected_faces[i].shape_id);
-			for (auto& triangle : detected_faces[i].triangles) {
-				glutils::drawPolygon(triangle, color, glm::mat4(), vertices);
+			if (show_points) {
+				std::vector<Vertex> vertices;
+				for (auto& pos : detected_faces[i].points) {
+					glm::vec4 color = getColor(detected_faces[i].shape_id);
+					glutils::drawBox(0.3, 0.3, 0.3, color, glm::translate(glm::mat4(), pos), vertices);
+				}
+				renderManager.addObject("point_cloud", "", vertices, true);
+			}
+
+			if (show_faces) {
+				std::vector<Vertex> vertices;
+				glm::vec4 color = getColor(detected_faces[i].shape_id);
+				for (auto& triangle : detected_faces[i].triangles) {
+					glutils::drawPolygon(triangle, color, glm::mat4(), vertices);
+				}
+				renderManager.addObject("face", "", vertices, true);
 			}
 		}
-		renderManager.addObject("face", "", vertices, true);
 	}
 
 	// update shadow map

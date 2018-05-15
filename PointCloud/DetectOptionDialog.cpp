@@ -22,7 +22,7 @@ double DetectOptionDialog::getProbability() {
 }
 
 double DetectOptionDialog::getMinPoints() {
-	return ui.lineEditMinPoints->text().toInt();
+	return ui.lineEditMinPoints->text().toDouble();
 }
 
 double DetectOptionDialog::getEpsilon() {

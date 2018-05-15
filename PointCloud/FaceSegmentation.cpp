@@ -88,13 +88,17 @@ namespace pointcloud {
 					}
 
 					// remove the polygon because there is no supporting point
-					if (cnt_points_inside <= 0) {
+					if (cnt_points_inside <= area(polygons[j]) * 1.0) {
 						polygons.erase(polygons.begin() + j);
 					}
-					/*else if (area(polygons[i]) > 50000) {
+					/*
+					else if (area(polygons[i]) > 50000) {
 						polygons.erase(polygons.begin() + j);
-					}*/
+					}
+					*/
 				}
+
+
 
 				// update triangles of the face based on the remaining polygons
 				faces[i].triangles.clear();

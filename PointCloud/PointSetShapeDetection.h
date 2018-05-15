@@ -38,9 +38,7 @@ namespace pointcloud {
 
 		typedef CGAL::Point_set_3<Kernel::Point_3> Point_set;
 
-		void detect(std::vector<std::pair<glm::vec3, glm::vec3>>& point_cloud, double probability, int min_points, double epsilon, double cluster_epsilon, double normal_threshold, std::vector<Face>& faces, std::vector<int>& classification);
-		Kernel::FT dotProduct(const Kernel::Vector_3& v1, const Kernel::Vector_3& v2);
-		Kernel::Vector_3 crossProduct(const Kernel::Vector_3& v1, const Kernel::Vector_3& v2);
+		void detect(std::vector<std::pair<glm::vec3, glm::vec3>>& point_cloud, double probability, int min_points, double epsilon, double cluster_epsilon, double normal_threshold, std::vector<Face>& faces);
 
 	}
 }

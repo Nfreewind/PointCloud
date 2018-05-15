@@ -28,7 +28,6 @@ public:
 
 	// input voxel data
 	std::vector<std::pair<glm::vec3, glm::vec3>> point_cloud;
-	std::vector<int> classification;
 	std::vector<pointcloud::Face> detected_faces;
 
 	// rendering engine
@@ -37,7 +36,7 @@ public:
 	bool show_points;
 	bool show_faces;
 	bool face_detected;
-	int show_face_id = -1;
+	int show_face_id = -1;	// -1 means showing all faces
 	
 	// key status
 	bool shiftPressed;

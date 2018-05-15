@@ -5,9 +5,7 @@ namespace pointcloud {
 
 	namespace shape {
 
-		void detect(std::vector<std::pair<glm::vec3, glm::vec3>>& point_cloud, double probability, int min_points, double epsilon, double cluster_epsilon, double normal_threshold, std::vector<Face>& faces, std::vector<int>& classification) {
-			classification.resize(point_cloud.size(), 0);
-
+		void detect(std::vector<std::pair<glm::vec3, glm::vec3>>& point_cloud, double probability, int min_points, double epsilon, double cluster_epsilon, double normal_threshold, std::vector<Face>& faces) {
 			// Points with normals.
 			Pwn_vector points;
 			for (int i = 0; i < point_cloud.size(); i++) {
@@ -34,9 +32,6 @@ namespace pointcloud {
 			parameters.epsilon = epsilon;	// maximum Euclidean distance between a point and a shape.
 			parameters.cluster_epsilon = cluster_epsilon;	// maximum Euclidean distance between points to be clustered.
 			parameters.normal_threshold = normal_threshold;	// maximum normal deviation.
-
-			// Build internal data structures.
-			ransac.preprocess();
 
 			// Detects shapes.
 			ransac.detect(parameters);
@@ -73,10 +68,7 @@ namespace pointcloud {
 					// Retrieves point
 					Point_with_normal &p = *(points.begin() + (*index_it));
 
-					face.points.push_back(glm::dvec3(p.first.x(), p.first.y(), p.first.z()));
-
-					//std::cout << "index: " << (*index_it) << ", face: " << shape_id << std::endl;
-					classification[*index_it] = shape_id;
+					face.points.push_back(glm::vec3(p.first.x(), p.first.y(), p.first.z()));
 
 					if (VPlane* plane = dynamic_cast<VPlane*>(shape.get())) {
 						projected_points.push_back(plane->to_2d(p.first));
@@ -85,7 +77,7 @@ namespace pointcloud {
 						projected_points.push_back(plane->to_2d(p.first));
 					}
 
-					if (dotProduct(p.second, Kernel::Vector_3(face.normal.x, face.normal.y, face.normal.z)) >= 0) cnt_same_normal_direction++;
+					if (p.second * Kernel::Vector_3(face.normal.x, face.normal.y, face.normal.z) >= 0) cnt_same_normal_direction++;
 				}
 
 				if (cnt_same_normal_direction < (*it)->indices_of_assigned_points().size() * 0.5) {
@@ -132,15 +124,6 @@ namespace pointcloud {
 				glm::vec3 normal(points[i].second.x(), points[i].second.y(), points[i].second.z());
 				point_cloud[i] = std::make_pair(pos, normal);
 			}
-		}
-
-		Kernel::FT dotProduct(const Kernel::Vector_3& v1, const Kernel::Vector_3& v2) {
-			return v1 * v2;
-		}
-
-		Kernel::Vector_3 crossProduct(const Kernel::Vector_3& v1, const Kernel::Vector_3& v2) {
-			return CGAL::cross_product(v1, v2);
-			//return Kernel::Vector_3(v1.y() * v2.z() - v1.z() * v2.y(), v1.z() * v2.x() - v1.x() * v2.z(), v1.x() * v2.y() - v1.y() * v2.x());
 		}
 
 	}

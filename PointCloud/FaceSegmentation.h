@@ -42,12 +42,6 @@ namespace pointcloud {
 
 		typedef Kernel::FT                                           FT;
 		typedef Kernel::Segment_2                                    Segment;
-		//typedef CGAL::Alpha_shape_vertex_base_2<Kernel>              Alpha_Vb;
-		//typedef CGAL::Alpha_shape_face_base_2<Kernel>                Alpha_Fb;
-		//typedef CGAL::Triangulation_data_structure_2<Alpha_Vb, Alpha_Fb> Alpha_TDS;
-		//typedef CGAL::Delaunay_triangulation_2<Kernel, Alpha_TDS>        Alpha_Triangulation;
-		//typedef CGAL::Alpha_shape_2<Alpha_Triangulation>             Alpha_shape_2;
-		//typedef Alpha_shape_2::Alpha_shape_edges_iterator            Alpha_shape_edges_iterator;
 
 		typedef CGAL::Triangulation_vertex_base_2<Kernel>                      Vb;
 		typedef CGAL::Triangulation_face_base_with_info_2<FaceInfo, Kernel>    Fbb;
