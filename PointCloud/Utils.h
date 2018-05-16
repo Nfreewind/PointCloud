@@ -30,6 +30,7 @@
 #include <CGAL/random_polygon_2.h>
 #include <CGAL/Polygon_2.h>
 #include <CGAL/Boolean_set_operations_2.h>
+#include <glm/glm.hpp>
 #include "PointProcess.h"
 
 namespace pointcloud {
@@ -81,6 +82,8 @@ namespace pointcloud {
 		std::vector<std::vector<Point2>> tessellate(const PolygonWithHoles2& points);
 		void mark_domains(CDT& ct, CDT::Face_handle start, int index, std::list<CDT::Edge>& border);
 		void mark_domains(CDT& cdt);
+
+		void estimateNormals(std::vector<std::pair<glm::vec3, glm::vec3>>& points);
 
 	}
 

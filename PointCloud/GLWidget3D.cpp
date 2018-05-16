@@ -10,6 +10,7 @@
 #include <iostream>
 #include <QProcess>
 #include "FaceSegmentation.h"
+#include "Utils.h"
 
 GLWidget3D::GLWidget3D(MainWindow *parent) : QGLWidget(QGLFormat(QGL::SampleBuffers)) {
 	this->mainWin = parent;
@@ -314,6 +315,8 @@ void GLWidget3D::loadVoxelData(const QString& filename) {
 	}
 
 	convertVDB2PointCloud(voxel_data, point_cloud, 127, 0.3);
+	pointcloud::util::estimateNormals(point_cloud);
+
 	show_points = true;
 	show_faces = false;
 	face_detected = false;
@@ -418,6 +421,7 @@ void GLWidget3D::update3DGeometry() {
 		for (int i = 0; i < point_cloud.size(); i++) {
 			glm::vec3& pos = point_cloud[i].first;
 			glm::vec4 color = glm::vec4(1, 1, 1, 1);
+
 			glutils::drawBox(0.3, 0.3, 0.3, color, glm::translate(glm::mat4(), pos), vertices);
 		}
 		renderManager.addObject("point_cloud", "", vertices, true);

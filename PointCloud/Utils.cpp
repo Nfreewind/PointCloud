@@ -2,6 +2,8 @@
 #include <iostream>
 #include <list>
 #include <random>
+#include <CGAL/pca_estimate_normals.h>
+#include <CGAL/property_map.h>
 
 namespace pointcloud {
 	
@@ -256,6 +258,21 @@ namespace pointcloud {
 				if (n->info().nesting_level == -1){
 					mark_domains(cdt, n, e.first->info().nesting_level + 1, border);
 				}
+			}
+		}
+
+		void estimateNormals(std::vector<std::pair<glm::vec3, glm::vec3>>& input_points) {
+			std::vector<std::pair<Kernel::Point_3, Kernel::Vector_3>> points(input_points.size());
+
+			for (int i = 0; i < input_points.size(); i++) {
+				points[i].first = Kernel::Point_3(input_points[i].first.x, input_points[i].first.y, input_points[i].first.z);
+			}
+
+			const int nb_neighbors = 18;
+			CGAL::pca_estimate_normals<CGAL::Sequential_tag>(points, nb_neighbors, CGAL::parameters::point_map(CGAL::First_of_pair_property_map<std::pair<Kernel::Point_3, Kernel::Vector_3>>()).normal_map(CGAL::Second_of_pair_property_map<std::pair<Kernel::Point_3, Kernel::Vector_3>>()));
+
+			for (int i = 0; i < input_points.size(); i++) {
+				input_points[i].second = glm::vec3(points[i].second.x(), points[i].second.y(), points[i].second.z());
 			}
 		}
 
