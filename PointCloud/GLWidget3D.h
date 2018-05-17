@@ -29,6 +29,7 @@ public:
 	// input voxel data
 	std::vector<std::pair<glm::vec3, glm::vec3>> point_cloud;
 	std::vector<pointcloud::Face> detected_faces;
+	std::vector<pointcloud::Face> segmented_faces;
 
 	// rendering engine
 	RenderManager renderManager;
@@ -36,7 +37,7 @@ public:
 	bool show_points;
 	bool show_faces;
 	bool face_detected;
-	int show_face_id = -1;	// -1 means showing all faces
+	bool face_segmented;
 	
 	// key status
 	bool shiftPressed;
@@ -47,17 +48,17 @@ public:
 	// face selection
 	int _selectedFace = -1;
 	std::vector<std::vector<pointcloud::Face>> detected_faces_history;
+	std::vector<std::vector<pointcloud::Face>> segmented_faces_history;
 
 public:
 	GLWidget3D(MainWindow *parent = 0);
 
 	void drawScene();
 	void render();
-	void showFace(int face_id);
 	void loadVoxelData(const QString& filename);
 	void convertVDB2PointCloud(std::vector<cv::Mat_<uchar>>& voxel_data, std::vector<std::pair<glm::vec3, glm::vec3>>& point_cloud, int threshold, float voxel_size);
 	void detect(double probability, double min_points, double epsilon, double cluster_epsilon, double normal_threshold);
-	void segment();
+	void segment(float dilation_scale, float ratio_of_supporting_points_to_area);
 	float uniform_rand(float a, float b);
 	glm::vec4 getColor(int index);
 	glm::vec3 viewVector(const glm::vec2& point, const glm::mat4& mvMatrix, float focalLength, float aspect);

@@ -68,7 +68,7 @@ namespace pointcloud {
 					// Retrieves point
 					Point_with_normal &p = *(points.begin() + (*index_it));
 
-					face.points.push_back(glm::vec3(p.first.x(), p.first.y(), p.first.z()));
+					face.points.push_back(glm::dvec3(p.first.x(), p.first.y(), p.first.z()));
 
 					if (VPlane* plane = dynamic_cast<VPlane*>(shape.get())) {
 						projected_points.push_back(plane->to_2d(p.first));
@@ -91,7 +91,8 @@ namespace pointcloud {
 					CGAL::Polygon_2<Kernel> contour;
 					for (int j = 0; j < pts.size(); j++) {
 						contour.push_back(pts[j]);
-					}
+						face.boundary.push_back(glm::dvec2(pts[j].x(), pts[j].y()));
+					}					
 					face.area = contour.area();
 					std::vector<std::vector<Kernel::Point_2>> triangles = util::tessellate(pts);
 

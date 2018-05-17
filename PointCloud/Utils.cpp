@@ -2,6 +2,8 @@
 #include <iostream>
 #include <list>
 #include <random>
+#include <limits>
+#include <algorithm>
 #include <CGAL/pca_estimate_normals.h>
 #include <CGAL/property_map.h>
 
@@ -76,6 +78,20 @@ namespace pointcloud {
 			fout.close();
 		}
 
+		BoundingBox calculateBBox(const std::vector<glm::dvec2>& points) {
+			double min_x = (std::numeric_limits<double>::max)();
+			double min_y = (std::numeric_limits<double>::max)();
+			double max_x = -(std::numeric_limits<double>::max)();
+			double max_y = -(std::numeric_limits<double>::max)();
+			for (int i = 0; i < points.size(); i++) {
+				min_x = (std::min)(min_x, points[i].x);
+				min_y = (std::min)(min_y, points[i].y);
+				max_x = (std::max)(max_x, points[i].x);
+				max_y = (std::max)(max_y, points[i].y);
+			}
+
+			return BoundingBox(min_x, min_y, max_x, max_y);
+		}
 
 		void clockwiseOrder(std::vector<Kernel::Point_2>& points) {
 			float total = 0.0f;

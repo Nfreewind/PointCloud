@@ -37,6 +37,18 @@ namespace pointcloud {
 
 	namespace util {
 
+		class BoundingBox {
+		public:
+			glm::vec2 min_pt;
+			glm::vec2 max_pt;
+
+		public:
+			BoundingBox(float min_x, float min_y, float max_x, float max_y) : min_pt(min_x, min_y), max_pt(max_x, max_y) {}
+			glm::vec2 center() {
+				return glm::vec2((min_pt.x + max_pt.x) * 0.5, (min_pt.y + max_pt.y) * 0.5);
+			}
+		};
+
 		// The following definitions are for triangulation only.
 		struct FaceInfo {
 			FaceInfo() {}
@@ -72,6 +84,8 @@ namespace pointcloud {
 		}
 
 		void createCubePoints(const std::string& filename, int num_points);
+
+		BoundingBox calculateBBox(const std::vector<glm::dvec2>& points);
 
 		void clockwiseOrder(std::vector<Kernel::Point_2>& points);
 		void counterClockwiseOrder(std::vector<Kernel::Point_2>& points);

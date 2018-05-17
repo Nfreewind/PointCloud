@@ -26,7 +26,7 @@ GLWidget3D::GLWidget3D(MainWindow *parent) : QGLWidget(QGLFormat(QGL::SampleBuff
 	light_dir = glm::normalize(glm::vec3(-1, 1, -3));
 
 	// model/view/projection matrices for shadow mapping
-	glm::mat4 light_pMatrix = glm::ortho<float>(-1800, 1800, -1800, 1800, 0.1, 3600);
+	glm::mat4 light_pMatrix = glm::ortho<float>(-400, 400, -400, 400, 0.1, 800);
 	glm::mat4 light_mvMatrix = glm::lookAt(-light_dir * 300.0f, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 	light_mvpMatrix = light_pMatrix * light_mvMatrix;
 
@@ -36,6 +36,7 @@ GLWidget3D::GLWidget3D(MainWindow *parent) : QGLWidget(QGLFormat(QGL::SampleBuff
 	show_points = true;
 	show_faces = false;
 	face_detected = false;
+	face_segmented = false;
 }
 
 /**
@@ -298,11 +299,6 @@ void GLWidget3D::render() {
 	glActiveTexture(GL_TEXTURE0);
 }
 
-void GLWidget3D::showFace(int face_id) {
-	show_face_id = face_id;
-	update3DGeometry();
-}
-
 void GLWidget3D::loadVoxelData(const QString& filename) {
 	// get directory
 	QDir dir = QFileInfo(filename).absoluteDir();
@@ -317,9 +313,14 @@ void GLWidget3D::loadVoxelData(const QString& filename) {
 	convertVDB2PointCloud(voxel_data, point_cloud, 127, 0.3);
 	pointcloud::util::estimateNormals(point_cloud);
 
+	detected_faces.clear();
+	segmented_faces.clear();
+	detected_faces_history.clear();
+	segmented_faces_history.clear();
 	show_points = true;
 	show_faces = false;
 	face_detected = false;
+	face_segmented = false;
 	mainWin->ui.actionShowPoints->setChecked(true);
 	mainWin->ui.actionShowFaces->setChecked(false);
 
@@ -353,20 +354,26 @@ void GLWidget3D::detect(double probability, double min_points, double epsilon, d
 	std::cout << detected_faces.size() << " faces were detected." << std::endl;
 	detected_faces_history.clear();
 
+	segmented_faces.clear();
+	segmented_faces_history.clear();
 	face_detected = true;
+	face_segmented = false;
 	show_points = false;
+	mainWin->ui.actionShowPoints->setChecked(false);
 	show_faces = true;
 	mainWin->ui.actionShowFaces->setChecked(true);
 	_selectedFace = -1;
 	update3DGeometry();
 }
 
-void GLWidget3D::segment() {
+void GLWidget3D::segment(float dilation_scale, float ratio_of_supporting_points_to_area) {
 	if (face_detected) {
-		pointcloud::face_segmentation::segment(detected_faces);
+		segmented_faces = pointcloud::face_segmentation::segment(detected_faces, dilation_scale, ratio_of_supporting_points_to_area);
 
+		face_segmented = true;
 		show_faces = true;
 		mainWin->ui.actionShowFaces->setChecked(true);
+		_selectedFace = -1;
 
 		update3DGeometry();
 	}
@@ -379,9 +386,9 @@ float GLWidget3D::uniform_rand(float a, float b) {
 
 glm::vec4 GLWidget3D::getColor(int index) {
 	glm::vec4 color;
-	color.x = ((index * 313497) % 101) * 0.001 + 0.9;
-	color.y = ((index * 460261) % 101) * 0.001 + 0.9;
-	color.z = ((index * 282563) % 101) * 0.001 + 0.9;
+	color.x = ((index * 313497) % 101) * 0.002 + 0.8;
+	color.y = ((index * 460261) % 101) * 0.002 + 0.8;
+	color.z = ((index * 282563) % 101) * 0.002 + 0.8;
 
 	return color;
 }
@@ -424,18 +431,36 @@ int GLWidget3D::selectFace(const glm::vec3& cameraPos, const glm::vec3& viewDir)
 
 	_selectedFace = -1;
 
-	for (int i = 0; i < detected_faces.size(); i++) {
-		if (detected_faces[i].triangles.size() < 1) continue;
-		for (int j = 0; j <detected_faces[i].triangles.size(); j++) {
-			if (rayTriangleIntersection(cameraPos, viewDir, detected_faces[i].triangles[j][0], detected_faces[i].triangles[j][1], detected_faces[i].triangles[j][2], intPt)) {
-				float dist = glm::length(intPt - cameraPos);
+	if (face_segmented) {
+		for (int i = 0; i < segmented_faces.size(); i++) {
+			if (segmented_faces[i].triangles.size() < 1) continue;
+			for (int j = 0; j < segmented_faces[i].triangles.size(); j++) {
+				if (rayTriangleIntersection(cameraPos, viewDir, segmented_faces[i].triangles[j][0], segmented_faces[i].triangles[j][1], segmented_faces[i].triangles[j][2], intPt)) {
+					float dist = glm::length(intPt - cameraPos);
 
-				if (dist < min_dist) {
-					min_dist = dist;
-					_selectedFace = i;
+					if (dist < min_dist) {
+						min_dist = dist;
+						_selectedFace = i;
+					}
 				}
-			}
 
+			}
+		}
+	}
+	else if (face_detected) {
+		for (int i = 0; i < detected_faces.size(); i++) {
+			if (detected_faces[i].triangles.size() < 1) continue;
+			for (int j = 0; j < detected_faces[i].triangles.size(); j++) {
+				if (rayTriangleIntersection(cameraPos, viewDir, detected_faces[i].triangles[j][0], detected_faces[i].triangles[j][1], detected_faces[i].triangles[j][2], intPt)) {
+					float dist = glm::length(intPt - cameraPos);
+
+					if (dist < min_dist) {
+						min_dist = dist;
+						_selectedFace = i;
+					}
+				}
+
+			}
 		}
 	}
 
@@ -443,20 +468,44 @@ int GLWidget3D::selectFace(const glm::vec3& cameraPos, const glm::vec3& viewDir)
 }
 
 void GLWidget3D::deleteFace() {
-	if (_selectedFace != -1){
-		detected_faces_history.push_back(detected_faces);
-		detected_faces.erase(detected_faces.begin() + _selectedFace);
-		_selectedFace = -1;
-		update3DGeometry();
-		update();
+	if (_selectedFace != -1) {
+		if (face_segmented) {
+			segmented_faces_history.push_back(segmented_faces);
+			segmented_faces.erase(segmented_faces.begin() + _selectedFace);
+			_selectedFace = -1;
+			update3DGeometry();
+			update();
+		}
+		else if (face_detected) {
+			detected_faces_history.push_back(detected_faces);
+			detected_faces.erase(detected_faces.begin() + _selectedFace);
+			_selectedFace = -1;
+			update3DGeometry();
+			update();
+		}
 	}
 }
 
 void GLWidget3D::undo() {
-	if (detected_faces_history.size() > 0){
-		detected_faces.clear();
-		detected_faces = detected_faces_history[detected_faces_history.size() - 1];
-		detected_faces_history.pop_back();
+	if (face_segmented) {
+		if (segmented_faces_history.size() > 0) {
+			segmented_faces = segmented_faces_history.back();
+			segmented_faces_history.pop_back();
+		}
+		else {
+			face_segmented = false;
+		}
+		update3DGeometry();
+		update();
+	}
+	else if (face_detected) {
+		if (detected_faces_history.size() > 0) {
+			detected_faces = detected_faces_history.back();
+			detected_faces_history.pop_back();
+		}
+		else {
+			face_detected = false;
+		}
 		update3DGeometry();
 		update();
 	}
@@ -485,7 +534,7 @@ void GLWidget3D::update3DGeometry() {
 	if (!face_detected) {
 		std::vector<Vertex> vertices;
 		for (int i = 0; i < point_cloud.size(); i++) {
-			glm::vec3& pos = point_cloud[i].first;
+			glm::vec3 pos(point_cloud[i].first);
 			glm::vec4 color = glm::vec4(1, 1, 1, 1);
 
 			glutils::drawBox(0.3, 0.3, 0.3, color, glm::translate(glm::mat4(), pos), vertices);
@@ -493,26 +542,50 @@ void GLWidget3D::update3DGeometry() {
 		renderManager.addObject("point_cloud", "", vertices, true);
 	}
 	else {
-		for (int i = 0; i < detected_faces.size(); i++) {
-			if (show_face_id != -1 && show_face_id != detected_faces[i].shape_id) continue;
-			
-			glm::vec4 color = getColor(detected_faces[i].shape_id);
-			if (i == _selectedFace) color = glm::vec4(0, 0, 1, 1);
+		if (face_segmented) {
+			for (int i = 0; i < segmented_faces.size(); i++) {
+				glm::vec4 color = getColor(segmented_faces[i].shape_id);
+				if (i == _selectedFace) color = glm::vec4(0, 0, 1, 1);
 
-			if (show_points) {
-				std::vector<Vertex> vertices;
-				for (auto& pos : detected_faces[i].points) {		
-					glutils::drawBox(0.3, 0.3, 0.3, color, glm::translate(glm::mat4(), pos), vertices);
+				if (show_points) {
+					std::vector<Vertex> vertices;
+					for (int j = 0; j < segmented_faces[i].points.size(); j++) {
+						glm::vec3 pos(segmented_faces[i].points[j]);
+						glutils::drawBox(0.3, 0.3, 0.3, color, glm::translate(glm::mat4(), pos), vertices);
+					}
+					renderManager.addObject("point_cloud", "", vertices, true);
 				}
-				renderManager.addObject("point_cloud", "", vertices, true);
+
+				if (show_faces) {
+					std::vector<Vertex> vertices;
+					for (auto& triangle : segmented_faces[i].triangles) {
+						glutils::drawPolygon(triangle, color, glm::mat4(), vertices);
+					}
+					renderManager.addObject("face", "", vertices, true);
+				}
 			}
+		}
+		else if (face_detected) {
+			for (int i = 0; i < detected_faces.size(); i++) {
+				glm::vec4 color = getColor(detected_faces[i].shape_id);
+				if (i == _selectedFace) color = glm::vec4(0, 0, 1, 1);
 
-			if (show_faces) {
-				std::vector<Vertex> vertices;
-				for (auto& triangle : detected_faces[i].triangles) {
-					glutils::drawPolygon(triangle, color, glm::mat4(), vertices);
+				if (show_points) {
+					std::vector<Vertex> vertices;
+					for (int j = 0; j < detected_faces[i].points.size(); j++) {
+						glm::vec3 pos(detected_faces[i].points[j]);
+						glutils::drawBox(0.3, 0.3, 0.3, color, glm::translate(glm::mat4(), pos), vertices);
+					}
+					renderManager.addObject("point_cloud", "", vertices, true);
 				}
-				renderManager.addObject("face", "", vertices, true);
+
+				if (show_faces) {
+					std::vector<Vertex> vertices;
+					for (auto& triangle : detected_faces[i].triangles) {
+						glutils::drawPolygon(triangle, color, glm::mat4(), vertices);
+					}
+					renderManager.addObject("face", "", vertices, true);
+				}
 			}
 		}
 	}

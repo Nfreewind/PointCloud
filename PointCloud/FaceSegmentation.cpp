@@ -1,4 +1,5 @@
 #include "FaceSegmentation.h"
+#include <algorithm>
 #include <CGAL/intersections.h>
 #include "Utils.h"
 
@@ -6,7 +7,10 @@ namespace pointcloud {
 
 	namespace face_segmentation {
 
-		void segment(std::vector<Face>& faces) {
+		std::vector<Face> segment(const std::vector<Face>& faces, float dilation_scale, float ratio_of_supporting_points_to_area) {
+			std::vector<Face> new_faces;
+			int shape_id = 1;
+
 			for (int i = 0; i < faces.size(); i++) {
 				Kernel::Plane_3 plane(faces[i].normal.x, faces[i].normal.y, faces[i].normal.z, faces[i].d);
 
@@ -16,14 +20,20 @@ namespace pointcloud {
 					Point3 pt(faces[i].points[j].x, faces[i].points[j].y, faces[i].points[j].z);
 					points_on_plane[j] = plane.to_2d(pt);
 				}
-
+				
+				// calculate the enlarged boundary
+				BoundingBox bbox = calculateBBox(points_on_plane);
+				glm::vec2 center_pt = bbox.center();
+				bbox.min_pt = center_pt + (bbox.min_pt - center_pt) * dilation_scale;
+				bbox.max_pt = center_pt + (bbox.max_pt - center_pt) * dilation_scale;
 
 				// create a large polygon and make it a single element of list
 				PolygonWithHoles2 polygon;
-				polygon.outer_boundary().push_back(Point2(-10000, -10000));
-				polygon.outer_boundary().push_back(Point2(10000, -10000));
-				polygon.outer_boundary().push_back(Point2(10000, 10000));
-				polygon.outer_boundary().push_back(Point2(-10000, 10000));
+				polygon.outer_boundary().push_back(Point2(bbox.min_pt.x, bbox.min_pt.y));
+				polygon.outer_boundary().push_back(Point2(bbox.max_pt.x, bbox.min_pt.y));
+				polygon.outer_boundary().push_back(Point2(bbox.max_pt.x, bbox.max_pt.y));
+				polygon.outer_boundary().push_back(Point2(bbox.min_pt.x, bbox.max_pt.y));
+				
 				std::vector<PolygonWithHoles2> polygons;
 				polygons.push_back(polygon);
 
@@ -80,27 +90,24 @@ namespace pointcloud {
 
 				// remove polygonts that have too few supporting points
 				for (int j = polygons.size() - 1; j >= 0; j--) {
+					// calculate enlarged polygon
+					PolygonWithHoles2 enlarged_polygon = dilatePolygon(polygons[j], dilation_scale);
+
 					int cnt_points_inside = 0;
 					for (auto& point_on_plane : points_on_plane) {
-						if (isInside(point_on_plane, polygons[j])) {
+						if (isInside(point_on_plane, enlarged_polygon)) {
 							cnt_points_inside++;
 						}
 					}
 
 					// remove the polygon because there is no supporting point
-					if (cnt_points_inside <= area(polygons[j]) * 1.0) {
+					if (cnt_points_inside <= area(polygons[j]) * ratio_of_supporting_points_to_area) {
 						polygons.erase(polygons.begin() + j);
 					}
-					/*
-					else if (area(polygons[i]) > 50000) {
-						polygons.erase(polygons.begin() + j);
-					}
-					*/
 				}
-
-
-
+				
 				// update triangles of the face based on the remaining polygons
+				/*
 				faces[i].triangles.clear();
 				for (int j = 0; j < polygons.size(); j++) {
 					std::vector<std::vector<Point2>> triangles = tessellate(polygons[j]);
@@ -115,7 +122,33 @@ namespace pointcloud {
 					}
 					faces[i].triangles.insert(faces[i].triangles.end(), glm_triangles.begin(), glm_triangles.end());
 				}
+				*/
+				for (int j = 0; j < polygons.size(); j++) {
+					Face face;
+					face.shape_id = shape_id++;
+					face.normal = faces[i].normal;
+					face.d = faces[i].d;
+					for (auto& point_on_plane : points_on_plane) {
+						if (isInside(point_on_plane, polygons[j])) {
+							Point3 pt = plane.to_3d(point_on_plane);
+							face.points.push_back(glm::vec3(CGAL::to_double(pt.x()), CGAL::to_double(pt.y()), CGAL::to_double(pt.z())));
+						}
+					}
+					face.area = CGAL::to_double(area(polygons[j]));
+					std::vector<std::vector<Point2>> triangles = tessellate(polygons[j]);
+					face.triangles.resize(triangles.size());
+					for (int k = 0; k < triangles.size(); k++) {
+						face.triangles[k].resize(triangles[k].size());
+						for (int l = 0; l < triangles[k].size(); l++) {
+							Point3 pt3d = plane.to_3d(triangles[k][l]);
+							face.triangles[k][l] = glm::dvec3(CGAL::to_double(pt3d.x()), CGAL::to_double(pt3d.y()), CGAL::to_double(pt3d.z()));
+						}
+					}
+					new_faces.push_back(face);
+				}
 			}
+
+			return new_faces;
 		}
 
 		bool isInside(const Point2& pt, const PolygonWithHoles2& polygon) {
@@ -233,6 +266,35 @@ namespace pointcloud {
 			}
 		}
 
+		BoundingBox calculateBBox(const std::vector<Point2>& points) {
+			double min_x = (std::numeric_limits<float>::max)();
+			double min_y = (std::numeric_limits<float>::max)();
+			double max_x = -(std::numeric_limits<float>::max)();
+			double max_y = -(std::numeric_limits<float>::max)();
+			for (int i = 0; i < points.size(); i++) {
+				min_x = std::min(min_x, CGAL::to_double(points[i].x()));
+				min_y = std::min(min_y, CGAL::to_double(points[i].y()));
+				max_x = std::max(max_x, CGAL::to_double(points[i].x()));
+				max_y = std::max(max_y, CGAL::to_double(points[i].y()));
+			}
+
+			return BoundingBox(min_x, min_y, max_x, max_y);
+		}
+
+		/**
+		 * Dilate a polygon by the specified scale.
+		 */
+		PolygonWithHoles2 dilatePolygon(const PolygonWithHoles2& polygon, double scale) {
+			CGAL::Bbox_2 bbox = polygon.outer_boundary().bbox();
+			Point2 center((bbox.xmin() + bbox.xmax()) * 0.5, (bbox.ymin() + bbox.ymax()) * 0.5);
+
+			PolygonWithHoles2 ans;
+			for (auto it = polygon.outer_boundary().vertices_begin(); it != polygon.outer_boundary().vertices_end(); it++) {
+				ans.outer_boundary().push_back(Point2((it->x() - center.x()) * scale + center.x(), (it->y() - center.y()) * scale + center.y()));
+			}
+
+			return ans;
+		}
 
 	}
 

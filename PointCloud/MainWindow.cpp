@@ -1,6 +1,7 @@
 #include "MainWindow.h"
 #include <QFileDialog>
 #include "DetectOptionDialog.h"
+#include "SegmentOptionDialog.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 	ui.setupUi(this);
@@ -84,8 +85,11 @@ void MainWindow::onDetect() {
 }
 
 void MainWindow::onSegment() {
-	glWidget->segment();
-	glWidget->update();
+	SegmentOptionDialog dlg;
+	if (dlg.exec()) {
+		glWidget->segment(dlg.getDilationScale(), dlg.getMinSupportingPointsRatio());
+		glWidget->update();
+	}
 }
 
 void MainWindow::onPrintDetectedFaces() {

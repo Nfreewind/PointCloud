@@ -24,6 +24,18 @@ namespace pointcloud {
 
 	namespace face_segmentation {
 		
+		class BoundingBox {
+		public:
+			glm::vec2 min_pt;
+			glm::vec2 max_pt;
+
+		public:
+			BoundingBox(float min_x, float min_y, float max_x, float max_y) : min_pt(min_x, min_y), max_pt(max_x, max_y) {}
+			glm::vec2 center() {
+				return glm::vec2((min_pt.x + max_pt.x) * 0.5, (min_pt.y + max_pt.y) * 0.5);
+			}
+		};
+
 		// The following definitions are for triangulation only.
 		struct FaceInfo {
 			FaceInfo() {}
@@ -50,7 +62,7 @@ namespace pointcloud {
 		typedef CGAL::Exact_predicates_tag                                Itag;
 		typedef CGAL::Constrained_Delaunay_triangulation_2<Kernel, TDS, Itag>  CDT;
 
-		void segment(std::vector<Face>& faces);
+		std::vector<Face> segment(const std::vector<Face>& faces, float dilation_scale, float ratio_of_supporting_points_to_area);
 		bool isInside(const Point2& pt, const PolygonWithHoles2& polygon);
 		Kernel::FT area(const PolygonWithHoles2& polygon);
 
@@ -58,6 +70,8 @@ namespace pointcloud {
 		void mark_domains(CDT& ct, CDT::Face_handle start, int index, std::list<CDT::Edge>& border);
 		void mark_domains(CDT& cdt);
 
+		BoundingBox calculateBBox(const std::vector<Point2>& points);
+		PolygonWithHoles2 dilatePolygon(const PolygonWithHoles2& polygon, double scale);
 	};
 
 }
