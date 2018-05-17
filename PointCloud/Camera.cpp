@@ -66,7 +66,7 @@ void Camera::move(int mouse_x, int mouse_y) {
  * Update perspective projection matrix, and then, update the model view projection matrix.
  */
 void Camera::updatePMatrix(int width,int height) {
-	float aspect = (float)width / (float)height;
+	aspect = (float)width / (float)height;
 	float zfar = 8000.0f;
 	float znear = 1.0f;
 	float f = 1.0f / tan(fovy * M_PI / 360.0f);
@@ -100,4 +100,8 @@ void Camera::updateMVPMatrix() {
 
 float Camera::f() {
 	return 1.0f / tan(fovy / 180.0f * M_PI * 0.5);
+}
+
+glm::vec3 Camera::cameraPosInWorld() {
+	return glm::vec3(glm::inverse(mvMatrix) * glm::vec4(0, 0, 0, 1));
 }

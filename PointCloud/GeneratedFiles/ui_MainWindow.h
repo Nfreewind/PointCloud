@@ -49,12 +49,15 @@ public:
     QAction *actionShow11;
     QAction *actionShow12;
     QAction *actionPrintDetectedFaces;
+    QAction *actionDelete;
+    QAction *actionUndo;
     QWidget *centralWidget;
     QMenuBar *menuBar;
     QMenu *menuFile;
     QMenu *menuTool;
     QMenu *menuView;
     QMenu *menuRendering;
+    QMenu *menuEdit;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
 
@@ -131,6 +134,16 @@ public:
         actionShow12->setCheckable(true);
         actionPrintDetectedFaces = new QAction(MainWindowClass);
         actionPrintDetectedFaces->setObjectName(QStringLiteral("actionPrintDetectedFaces"));
+        actionDelete = new QAction(MainWindowClass);
+        actionDelete->setObjectName(QStringLiteral("actionDelete"));
+        QIcon icon1;
+        icon1.addFile(QStringLiteral("Resources/delete.png"), QSize(), QIcon::Normal, QIcon::Off);
+        actionDelete->setIcon(icon1);
+        actionUndo = new QAction(MainWindowClass);
+        actionUndo->setObjectName(QStringLiteral("actionUndo"));
+        QIcon icon2;
+        icon2.addFile(QStringLiteral("Resources/undo.png"), QSize(), QIcon::Normal, QIcon::Off);
+        actionUndo->setIcon(icon2);
         centralWidget = new QWidget(MainWindowClass);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         MainWindowClass->setCentralWidget(centralWidget);
@@ -145,6 +158,8 @@ public:
         menuView->setObjectName(QStringLiteral("menuView"));
         menuRendering = new QMenu(menuBar);
         menuRendering->setObjectName(QStringLiteral("menuRendering"));
+        menuEdit = new QMenu(menuBar);
+        menuEdit->setObjectName(QStringLiteral("menuEdit"));
         MainWindowClass->setMenuBar(menuBar);
         mainToolBar = new QToolBar(MainWindowClass);
         mainToolBar->setObjectName(QStringLiteral("mainToolBar"));
@@ -154,6 +169,7 @@ public:
         MainWindowClass->setStatusBar(statusBar);
 
         menuBar->addAction(menuFile->menuAction());
+        menuBar->addAction(menuEdit->menuAction());
         menuBar->addAction(menuTool->menuAction());
         menuBar->addAction(menuView->menuAction());
         menuBar->addAction(menuRendering->menuAction());
@@ -166,23 +182,11 @@ public:
         menuTool->addAction(actionPrintDetectedFaces);
         menuView->addAction(actionShowPoints);
         menuView->addAction(actionShowFaces);
-        menuView->addSeparator();
-        menuView->addAction(actionShowAll);
-        menuView->addAction(actionShow1);
-        menuView->addAction(actionShow2);
-        menuView->addAction(actionShow3);
-        menuView->addAction(actionShow4);
-        menuView->addAction(actionShow5);
-        menuView->addAction(actionShow6);
-        menuView->addAction(actionShow7);
-        menuView->addAction(actionShow8);
-        menuView->addAction(actionShow9);
-        menuView->addAction(actionShow10);
-        menuView->addAction(actionShow11);
-        menuView->addAction(actionShow12);
         menuRendering->addAction(actionRenderingBasic);
         menuRendering->addAction(actionRenderingSSAO);
         menuRendering->addAction(actionRenderingHatching);
+        menuEdit->addAction(actionDelete);
+        menuEdit->addAction(actionUndo);
 
         retranslateUi(MainWindowClass);
 
@@ -216,10 +220,15 @@ public:
         actionShow11->setText(QApplication::translate("MainWindowClass", "Show 11", 0));
         actionShow12->setText(QApplication::translate("MainWindowClass", "Show 12", 0));
         actionPrintDetectedFaces->setText(QApplication::translate("MainWindowClass", "Print Detected Faces", 0));
+        actionDelete->setText(QApplication::translate("MainWindowClass", "Delete", 0));
+        actionDelete->setShortcut(QApplication::translate("MainWindowClass", "Del", 0));
+        actionUndo->setText(QApplication::translate("MainWindowClass", "Undo", 0));
+        actionUndo->setShortcut(QApplication::translate("MainWindowClass", "Ctrl+Z", 0));
         menuFile->setTitle(QApplication::translate("MainWindowClass", "File", 0));
         menuTool->setTitle(QApplication::translate("MainWindowClass", "Tool", 0));
         menuView->setTitle(QApplication::translate("MainWindowClass", "View", 0));
         menuRendering->setTitle(QApplication::translate("MainWindowClass", "Rendering", 0));
+        menuEdit->setTitle(QApplication::translate("MainWindowClass", "Edit", 0));
     } // retranslateUi
 
 };

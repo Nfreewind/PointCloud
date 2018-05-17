@@ -15,6 +15,8 @@ public:
 	void updatePMatrix(int width,int height);
 	void updateMVPMatrix();
 	float f();
+	float get_aspect(){ return aspect; };
+	glm::vec3 cameraPosInWorld();
 
 public:
 	glm::vec2 center;
@@ -25,6 +27,7 @@ public:
 	float zrot;
 
 	glm::vec2 mouse_pos;
+	float aspect;
 
 public:
 	glm::mat4 mvMatrix;

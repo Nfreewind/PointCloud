@@ -46,20 +46,6 @@
     </property>
     <addaction name="actionShowPoints"/>
     <addaction name="actionShowFaces"/>
-    <addaction name="separator"/>
-    <addaction name="actionShowAll"/>
-    <addaction name="actionShow1"/>
-    <addaction name="actionShow2"/>
-    <addaction name="actionShow3"/>
-    <addaction name="actionShow4"/>
-    <addaction name="actionShow5"/>
-    <addaction name="actionShow6"/>
-    <addaction name="actionShow7"/>
-    <addaction name="actionShow8"/>
-    <addaction name="actionShow9"/>
-    <addaction name="actionShow10"/>
-    <addaction name="actionShow11"/>
-    <addaction name="actionShow12"/>
    </widget>
    <widget class="QMenu" name="menuRendering">
     <property name="title">
@@ -69,7 +55,15 @@
     <addaction name="actionRenderingSSAO"/>
     <addaction name="actionRenderingHatching"/>
    </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionDelete"/>
+    <addaction name="actionUndo"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
    <addaction name="menuTool"/>
    <addaction name="menuView"/>
    <addaction name="menuRendering"/>
@@ -260,6 +254,30 @@
   <action name="actionPrintDetectedFaces">
    <property name="text">
     <string>Print Detected Faces</string>
+   </property>
+  </action>
+  <action name="actionDelete">
+   <property name="icon">
+    <iconset>
+     <normaloff>Resources/delete.png</normaloff>Resources/delete.png</iconset>
+   </property>
+   <property name="text">
+    <string>Delete</string>
+   </property>
+   <property name="shortcut">
+    <string>Del</string>
+   </property>
+  </action>
+  <action name="actionUndo">
+   <property name="icon">
+    <iconset>
+     <normaloff>Resources/undo.png</normaloff>Resources/undo.png</iconset>
+   </property>
+   <property name="text">
+    <string>Undo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Z</string>
    </property>
   </action>
  </widget>

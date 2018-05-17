@@ -351,11 +351,13 @@ void GLWidget3D::detect(double probability, double min_points, double epsilon, d
 
 	pointcloud::shape::detect(point_cloud, probability, point_cloud.size() * 0.01 * min_points, diagonal * 0.01 * epsilon, diagonal * 0.01 * cluster_epsilon, normal_threshold, detected_faces);
 	std::cout << detected_faces.size() << " faces were detected." << std::endl;
+	detected_faces_history.clear();
 
 	face_detected = true;
+	show_points = false;
 	show_faces = true;
 	mainWin->ui.actionShowFaces->setChecked(true);
-
+	_selectedFace = -1;
 	update3DGeometry();
 }
 
@@ -377,23 +379,87 @@ float GLWidget3D::uniform_rand(float a, float b) {
 
 glm::vec4 GLWidget3D::getColor(int index) {
 	glm::vec4 color;
-
-	if (index == 0) color = glm::vec4(0, 0, 0, 1);
-	else if (index == 1) color = glm::vec4(1, 0, 0, 1);
-	else if (index == 2) color = glm::vec4(0, 1, 0, 1);
-	else if (index == 3) color = glm::vec4(0, 0, 1, 1);
-	else if (index == 4) color = glm::vec4(1, 0, 1, 1);
-	else if (index == 5) color = glm::vec4(1, 1, 0, 1);
-	else if (index == 6) color = glm::vec4(0, 1, 1, 1);
-	else if (index == 7) color = glm::vec4(0.5, 0, 0, 1);
-	else if (index == 8) color = glm::vec4(0, 0.5, 0, 1);
-	else if (index == 9) color = glm::vec4(0, 0, 0.5, 1);
-	else if (index == 10) color = glm::vec4(0.5, 0, 0.5, 1);
-	else if (index == 11) color = glm::vec4(0.5, 0.5, 0, 1);
-	else if (index == 12) color = glm::vec4(0, 0.5, 0.5, 1);
-	else color = glm::vec4(1, 1, 1, 1);
+	color.x = ((index * 313497) % 101) * 0.001 + 0.9;
+	color.y = ((index * 460261) % 101) * 0.001 + 0.9;
+	color.z = ((index * 282563) % 101) * 0.001 + 0.9;
 
 	return color;
+}
+
+glm::vec3 GLWidget3D::viewVector(const glm::vec2& point, const glm::mat4& mvMatrix, float focalLength, float aspect) {
+	glm::vec3 dir((point.x - width() * 0.5f) * 2.0f / width() * aspect, (height() * 0.5f - point.y) * 2.0f / height(), -focalLength);
+	return glm::vec3(glm::inverse(mvMatrix) * glm::vec4(dir, 0));
+}
+
+/**
+* Ray-Triangle intersection
+*/
+bool GLWidget3D::rayTriangleIntersection(const glm::vec3& a, const glm::vec3& v, const glm::vec3& p1, const glm::vec3& p2, const glm::vec3& p3, glm::vec3& intPt) {
+	glm::vec3 n = glm::cross(p2 - p1, p3 - p1);
+	intPt = a + v * glm::dot(p1 - a, n) / glm::dot(v, n);
+
+	cv::Mat_<double> L(3, 1);
+	L(0, 0) = (intPt - p1).x;
+	L(1, 0) = (intPt - p1).y;
+	L(2, 0) = (intPt - p1).z;
+	cv::Mat_<double> R(3, 2);
+	R(0, 0) = (p2 - p1).x;
+	R(1, 0) = (p2 - p1).y;
+	R(2, 0) = (p2 - p1).z;
+	R(0, 1) = (p3 - p1).x;
+	R(1, 1) = (p3 - p1).y;
+	R(2, 1) = (p3 - p1).z;
+
+	cv::Mat_<double> st = R.inv(cv::DECOMP_SVD) * L;
+
+	if (st(0, 0) >= 0 && st(1, 0) >= 0 && st(0, 0) + st(1, 0) <= 1) return true;
+	else return false;
+}
+
+int GLWidget3D::selectFace(const glm::vec3& cameraPos, const glm::vec3& viewDir) {
+	if (!show_faces) return -1;
+
+	glm::vec3 intPt;
+	float min_dist = (std::numeric_limits<float>::max)();
+
+	_selectedFace = -1;
+
+	for (int i = 0; i < detected_faces.size(); i++) {
+		if (detected_faces[i].triangles.size() < 1) continue;
+		for (int j = 0; j <detected_faces[i].triangles.size(); j++) {
+			if (rayTriangleIntersection(cameraPos, viewDir, detected_faces[i].triangles[j][0], detected_faces[i].triangles[j][1], detected_faces[i].triangles[j][2], intPt)) {
+				float dist = glm::length(intPt - cameraPos);
+
+				if (dist < min_dist) {
+					min_dist = dist;
+					_selectedFace = i;
+				}
+			}
+
+		}
+	}
+
+	return _selectedFace;
+}
+
+void GLWidget3D::deleteFace() {
+	if (_selectedFace != -1){
+		detected_faces_history.push_back(detected_faces);
+		detected_faces.erase(detected_faces.begin() + _selectedFace);
+		_selectedFace = -1;
+		update3DGeometry();
+		update();
+	}
+}
+
+void GLWidget3D::undo() {
+	if (detected_faces_history.size() > 0){
+		detected_faces.clear();
+		detected_faces = detected_faces_history[detected_faces_history.size() - 1];
+		detected_faces_history.pop_back();
+		update3DGeometry();
+		update();
+	}
 }
 
 void GLWidget3D::printDetectedFaces() {
@@ -429,11 +495,13 @@ void GLWidget3D::update3DGeometry() {
 	else {
 		for (int i = 0; i < detected_faces.size(); i++) {
 			if (show_face_id != -1 && show_face_id != detected_faces[i].shape_id) continue;
+			
+			glm::vec4 color = getColor(detected_faces[i].shape_id);
+			if (i == _selectedFace) color = glm::vec4(0, 0, 1, 1);
 
 			if (show_points) {
 				std::vector<Vertex> vertices;
-				for (auto& pos : detected_faces[i].points) {
-					glm::vec4 color = getColor(detected_faces[i].shape_id);
+				for (auto& pos : detected_faces[i].points) {		
 					glutils::drawBox(0.3, 0.3, 0.3, color, glm::translate(glm::mat4(), pos), vertices);
 				}
 				renderManager.addObject("point_cloud", "", vertices, true);
@@ -441,7 +509,6 @@ void GLWidget3D::update3DGeometry() {
 
 			if (show_faces) {
 				std::vector<Vertex> vertices;
-				glm::vec4 color = getColor(detected_faces[i].shape_id);
 				for (auto& triangle : detected_faces[i].triangles) {
 					glutils::drawPolygon(triangle, color, glm::mat4(), vertices);
 				}
@@ -464,7 +531,6 @@ void GLWidget3D::keyPressEvent(QKeyEvent *e) {
 	if (e->modifiers() & Qt::ShiftModifier) {
 		shiftPressed = true;
 	}
-
 	switch (e->key()) {
 	case Qt::Key_Space:
 		break;
@@ -591,10 +657,21 @@ void GLWidget3D::mousePressEvent(QMouseEvent *e) {
 	// This is necessary to get key event occured even after the user selects a menu.
 	setFocus();
 
-	if (e->buttons() & Qt::LeftButton) {
+	if (e->buttons() & Qt::RightButton) {
 		camera.mousePress(e->x(), e->y());
 	}
-	else if (e->buttons() & Qt::RightButton) {
+	else if (e->buttons() & Qt::LeftButton) {
+		// camera position in the world coordinates
+		glm::vec3 cameraPos = camera.cameraPosInWorld();
+		// view direction
+		glm::vec3 view_dir = viewVector(glm::vec2(e->x(), e->y()), camera.mvMatrix, camera.f(), camera.get_aspect());
+
+		// select a building
+		if (selectFace(cameraPos, view_dir) >= 0) {
+			update3DGeometry();
+			update();
+		}
+		//std::cout << "_selectedFace is " << _selectedFace << std::endl;
 	}
 }
 
@@ -603,7 +680,7 @@ void GLWidget3D::mousePressEvent(QMouseEvent *e) {
 */
 
 void GLWidget3D::mouseMoveEvent(QMouseEvent *e) {
-	if (e->buttons() & Qt::LeftButton) {
+	if (e->buttons() & Qt::RightButton) {
 		if (shiftPressed) {
 			camera.move(e->x(), e->y());
 		}

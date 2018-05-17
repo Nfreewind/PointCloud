@@ -44,6 +44,10 @@ public:
 
 	bool first_paint;
 
+	// face selection
+	int _selectedFace = -1;
+	std::vector<std::vector<pointcloud::Face>> detected_faces_history;
+
 public:
 	GLWidget3D(MainWindow *parent = 0);
 
@@ -56,6 +60,11 @@ public:
 	void segment();
 	float uniform_rand(float a, float b);
 	glm::vec4 getColor(int index);
+	glm::vec3 viewVector(const glm::vec2& point, const glm::mat4& mvMatrix, float focalLength, float aspect);
+	bool rayTriangleIntersection(const glm::vec3& a, const glm::vec3& v, const glm::vec3& p1, const glm::vec3& p2, const glm::vec3& p3, glm::vec3& intPt);
+	int selectFace(const glm::vec3& cameraPos, const glm::vec3& viewDir);
+	void deleteFace();
+	void undo();
 	void printDetectedFaces();
 	void saveImage(const QString& filename);
 	void update3DGeometry();

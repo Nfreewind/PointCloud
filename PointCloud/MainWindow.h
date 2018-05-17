@@ -18,23 +18,12 @@ public:
 
 public slots:
 	void onOpen();
+	void onDelete();
+	void onUndo();
 	void onDetect();
 	void onSegment();
 	void onPrintDetectedFaces();
 	void onShowChanged();
-	void onShowAll();
-	void onShow1();
-	void onShow2();
-	void onShow3();
-	void onShow4();
-	void onShow5();
-	void onShow6();
-	void onShow7();
-	void onShow8();
-	void onShow9();
-	void onShow10();
-	void onShow11();
-	void onShow12();
 	void onRenderingModeChanged();
 };
 
