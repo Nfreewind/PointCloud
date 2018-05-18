@@ -51,6 +51,8 @@ public:
     QAction *actionPrintDetectedFaces;
     QAction *actionDelete;
     QAction *actionUndo;
+    QAction *actionUseRandomFaceColor;
+    QAction *actionUseSameFaceColor;
     QWidget *centralWidget;
     QMenuBar *menuBar;
     QMenu *menuFile;
@@ -144,6 +146,12 @@ public:
         QIcon icon2;
         icon2.addFile(QStringLiteral("Resources/undo.png"), QSize(), QIcon::Normal, QIcon::Off);
         actionUndo->setIcon(icon2);
+        actionUseRandomFaceColor = new QAction(MainWindowClass);
+        actionUseRandomFaceColor->setObjectName(QStringLiteral("actionUseRandomFaceColor"));
+        actionUseRandomFaceColor->setCheckable(true);
+        actionUseSameFaceColor = new QAction(MainWindowClass);
+        actionUseSameFaceColor->setObjectName(QStringLiteral("actionUseSameFaceColor"));
+        actionUseSameFaceColor->setCheckable(true);
         centralWidget = new QWidget(MainWindowClass);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         MainWindowClass->setCentralWidget(centralWidget);
@@ -182,6 +190,9 @@ public:
         menuTool->addAction(actionPrintDetectedFaces);
         menuView->addAction(actionShowPoints);
         menuView->addAction(actionShowFaces);
+        menuView->addSeparator();
+        menuView->addAction(actionUseRandomFaceColor);
+        menuView->addAction(actionUseSameFaceColor);
         menuRendering->addAction(actionRenderingBasic);
         menuRendering->addAction(actionRenderingSSAO);
         menuRendering->addAction(actionRenderingHatching);
@@ -224,6 +235,8 @@ public:
         actionDelete->setShortcut(QApplication::translate("MainWindowClass", "Del", 0));
         actionUndo->setText(QApplication::translate("MainWindowClass", "Undo", 0));
         actionUndo->setShortcut(QApplication::translate("MainWindowClass", "Ctrl+Z", 0));
+        actionUseRandomFaceColor->setText(QApplication::translate("MainWindowClass", "Use Random Color for Faces", 0));
+        actionUseSameFaceColor->setText(QApplication::translate("MainWindowClass", "Use Same Color for Faces", 0));
         menuFile->setTitle(QApplication::translate("MainWindowClass", "File", 0));
         menuTool->setTitle(QApplication::translate("MainWindowClass", "Tool", 0));
         menuView->setTitle(QApplication::translate("MainWindowClass", "View", 0));

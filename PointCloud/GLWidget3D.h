@@ -18,6 +18,9 @@ class GLWidget3D : public QGLWidget {
 	Q_OBJECT
 
 public:
+	enum { FACE_RANDOM_COLOR = 0, FACE_SAME_COLOR };
+
+public:
 	MainWindow* mainWin;
 
 	// camera
@@ -34,6 +37,7 @@ public:
 	// rendering engine
 	RenderManager renderManager;
 
+	int face_coloring;
 	bool show_points;
 	bool show_faces;
 	bool face_detected;

@@ -33,6 +33,7 @@ GLWidget3D::GLWidget3D(MainWindow *parent) : QGLWidget(QGLFormat(QGL::SampleBuff
 	// spot light
 	spot_light_pos = glm::vec3(20, 25, 30);
 
+	face_coloring = FACE_RANDOM_COLOR;
 	show_points = true;
 	show_faces = false;
 	face_detected = false;
@@ -385,12 +386,17 @@ float GLWidget3D::uniform_rand(float a, float b) {
 }
 
 glm::vec4 GLWidget3D::getColor(int index) {
-	glm::vec4 color;
-	color.x = ((index * 313497) % 101) * 0.002 + 0.8;
-	color.y = ((index * 460261) % 101) * 0.002 + 0.8;
-	color.z = ((index * 282563) % 101) * 0.002 + 0.8;
+	if (face_coloring == FACE_RANDOM_COLOR) {
+		glm::vec4 color;
+		color.x = ((index * 313497) % 101) * 0.002 + 0.8;
+		color.y = ((index * 460261) % 101) * 0.002 + 0.8;
+		color.z = ((index * 282563) % 101) * 0.002 + 0.8;
 
-	return color;
+		return color;
+	}
+	else {
+		return glm::vec4(0.8, 1, 0.8, 1);
+	}
 }
 
 glm::vec3 GLWidget3D::viewVector(const glm::vec2& point, const glm::mat4& mvMatrix, float focalLength, float aspect) {
@@ -740,11 +746,9 @@ void GLWidget3D::mousePressEvent(QMouseEvent *e) {
 		glm::vec3 view_dir = viewVector(glm::vec2(e->x(), e->y()), camera.mvMatrix, camera.f(), camera.get_aspect());
 
 		// select a building
-		if (selectFace(cameraPos, view_dir) >= 0) {
-			update3DGeometry();
-			update();
-		}
-		//std::cout << "_selectedFace is " << _selectedFace << std::endl;
+		selectFace(cameraPos, view_dir);
+		update3DGeometry();
+		update();
 	}
 }
 

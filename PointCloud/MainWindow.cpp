@@ -6,21 +6,12 @@
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 	ui.setupUi(this);
 
-	// group for show modes
-	QActionGroup* groupShow = new QActionGroup(this);
-	groupShow->addAction(ui.actionShowAll);
-	groupShow->addAction(ui.actionShow1);
-	groupShow->addAction(ui.actionShow2);
-	groupShow->addAction(ui.actionShow3);
-	groupShow->addAction(ui.actionShow4);
-	groupShow->addAction(ui.actionShow5);
-	groupShow->addAction(ui.actionShow6);
-	groupShow->addAction(ui.actionShow7);
-	groupShow->addAction(ui.actionShow8);
-	groupShow->addAction(ui.actionShow9);
-	groupShow->addAction(ui.actionShow10);
-	groupShow->addAction(ui.actionShow11);
-	groupShow->addAction(ui.actionShow12);
+	// group for face color
+	QActionGroup* groupFaceColor = new QActionGroup(this);
+	groupFaceColor->addAction(ui.actionUseRandomFaceColor);
+	groupFaceColor->addAction(ui.actionUseSameFaceColor);
+
+	ui.actionUseRandomFaceColor->setChecked(true);
 
 	// group for rendering modes
 	QActionGroup* groupRendering = new QActionGroup(this);
@@ -39,6 +30,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 	connect(ui.actionPrintDetectedFaces, SIGNAL(triggered()), this, SLOT(onPrintDetectedFaces()));
 	connect(ui.actionShowPoints, SIGNAL(triggered()), this, SLOT(onShowChanged()));
 	connect(ui.actionShowFaces, SIGNAL(triggered()), this, SLOT(onShowChanged()));
+	connect(ui.actionUseRandomFaceColor, SIGNAL(triggered()), this, SLOT(onUseRandomFaceColor()));
+	connect(ui.actionUseSameFaceColor, SIGNAL(triggered()), this, SLOT(onUseSameFaceColor()));
 	connect(ui.actionRenderingBasic, SIGNAL(triggered()), this, SLOT(onRenderingModeChanged()));
 	connect(ui.actionRenderingSSAO, SIGNAL(triggered()), this, SLOT(onRenderingModeChanged()));
 	connect(ui.actionRenderingHatching, SIGNAL(triggered()), this, SLOT(onRenderingModeChanged()));
@@ -99,6 +92,18 @@ void MainWindow::onPrintDetectedFaces() {
 void MainWindow::onShowChanged() {
 	glWidget->show_points = ui.actionShowPoints->isChecked();
 	glWidget->show_faces = ui.actionShowFaces->isChecked();
+	glWidget->update3DGeometry();
+	glWidget->update();
+}
+
+void MainWindow::onUseRandomFaceColor() {
+	glWidget->face_coloring = GLWidget3D::FACE_RANDOM_COLOR;
+	glWidget->update3DGeometry();
+	glWidget->update();
+}
+
+void MainWindow::onUseSameFaceColor() {
+	glWidget->face_coloring = GLWidget3D::FACE_SAME_COLOR;
 	glWidget->update3DGeometry();
 	glWidget->update();
 }

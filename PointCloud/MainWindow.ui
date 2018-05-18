@@ -46,6 +46,9 @@
     </property>
     <addaction name="actionShowPoints"/>
     <addaction name="actionShowFaces"/>
+    <addaction name="separator"/>
+    <addaction name="actionUseRandomFaceColor"/>
+    <addaction name="actionUseSameFaceColor"/>
    </widget>
    <widget class="QMenu" name="menuRendering">
     <property name="title">
@@ -278,6 +281,22 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Z</string>
+   </property>
+  </action>
+  <action name="actionUseRandomFaceColor">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Use Random Color for Faces</string>
+   </property>
+  </action>
+  <action name="actionUseSameFaceColor">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Use Same Color for Faces</string>
    </property>
   </action>
  </widget>

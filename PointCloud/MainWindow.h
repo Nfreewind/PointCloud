@@ -24,6 +24,8 @@ public slots:
 	void onSegment();
 	void onPrintDetectedFaces();
 	void onShowChanged();
+	void onUseRandomFaceColor();
+	void onUseSameFaceColor();
 	void onRenderingModeChanged();
 };
 
