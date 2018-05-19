@@ -30,7 +30,7 @@ public:
 	glm::vec3 spot_light_pos;
 
 	// input voxel data
-	std::vector<std::pair<glm::vec3, glm::vec3>> point_cloud;
+	std::vector<std::pair<glm::dvec3, glm::dvec3>> point_cloud;
 	std::vector<pointcloud::Face> detected_faces;
 	std::vector<pointcloud::Face> segmented_faces;
 
@@ -60,10 +60,10 @@ public:
 	void drawScene();
 	void render();
 	void loadVoxelData(const QString& filename);
-	void convertVDB2PointCloud(std::vector<cv::Mat_<uchar>>& voxel_data, std::vector<std::pair<glm::vec3, glm::vec3>>& point_cloud, int threshold, float voxel_size);
+	void convertVDB2PointCloud(std::vector<cv::Mat_<uchar>>& voxel_data, std::vector<std::pair<glm::dvec3, glm::dvec3>>& point_cloud, int threshold, double voxel_size);
 	void detect(double probability, double min_points, double epsilon, double cluster_epsilon, double normal_threshold);
-	void segment(float dilation_scale, float ratio_of_supporting_points_to_area);
-	float uniform_rand(float a, float b);
+	void segment(double dilation_scale, double ratio_of_supporting_points_to_area);
+	double uniform_rand(double a, double b);
 	glm::vec4 getColor(int index);
 	glm::vec3 viewVector(const glm::vec2& point, const glm::mat4& mvMatrix, float focalLength, float aspect);
 	bool rayTriangleIntersection(const glm::vec3& a, const glm::vec3& v, const glm::vec3& p1, const glm::vec3& p2, const glm::vec3& p3, glm::vec3& intPt);

@@ -328,19 +328,19 @@ void GLWidget3D::loadVoxelData(const QString& filename) {
 	update3DGeometry();
 }
 
-void GLWidget3D::convertVDB2PointCloud(std::vector<cv::Mat_<uchar>>& voxel_data, std::vector<std::pair<glm::vec3, glm::vec3>>& point_cloud, int threshold, float voxel_size) {
+void GLWidget3D::convertVDB2PointCloud(std::vector<cv::Mat_<uchar>>& voxel_data, std::vector<std::pair<glm::dvec3, glm::dvec3>>& point_cloud, int threshold, double voxel_size) {
 	point_cloud.clear();
 
-	for (int z = 0; z < voxel_data.size(); z++) {		for (int r = 0; r < voxel_data[z].rows; r++) {			for (int c = 0; c < voxel_data[z].cols; c++) {				if (voxel_data[z](r, c) < threshold) continue;				int cnt = 0;				for (int zz = -1; zz <= 1; zz++) {					for (int rr = -1; rr <= 1; rr++) {						for (int cc = -1; cc <= 1; cc++) {							int r2 = r + rr;							int c2 = c + cc;							int z2 = z + zz;							if (z2 < 0 || z2 >= voxel_data.size() || r2 < 0 || r2 >= voxel_data[z].rows || c2 < 0 || c2 >= voxel_data[z].cols) cnt++;							else if (voxel_data[z2](r2, c2) < threshold) cnt++;						}					}				}				if (cnt == 0) continue;								float nx = 0;				float ny = 0;				float nz = 0;				if (z == 0 || voxel_data[z - 1](r, c) < threshold) nz--;				if (z == voxel_data.size() - 1 || voxel_data[z + 1](r, c) < threshold) nz++;				if (r == 0 || voxel_data[z](r - 1, c) < threshold) ny--;				if (r == voxel_data[z].rows - 1 || voxel_data[z](r + 1, c) < threshold) ny++;				if (c == 0 || voxel_data[z](r, c - 1) < threshold) nx--;				if (c == voxel_data[z].cols - 1 || voxel_data[z](r, c + 1) < threshold) nx++;				if (nx == 0 && ny == 0 && nz == 0) nx = ny = nz = 1;				float len = sqrt(nx * nx + ny * ny + nz * nz);				nx /= len;				ny /= len;				nz /= len;				glm::vec3 pos((uniform_rand(c - 0.2, c + 0.2) - voxel_data[0].cols * 0.5) * voxel_size, (voxel_data[0].rows * 0.5 - uniform_rand(r - 0.2, r + 0.2)) * voxel_size, uniform_rand(z - 0.2, z + 0.2) * voxel_size);				glm::vec3 normal(nx, -ny, nz);				point_cloud.push_back(std::make_pair(pos, normal));			}		}	}
+	for (int z = 0; z < voxel_data.size(); z++) {		for (int r = 0; r < voxel_data[z].rows; r++) {			for (int c = 0; c < voxel_data[z].cols; c++) {				if (voxel_data[z](r, c) < threshold) continue;				int cnt = 0;				for (int zz = -1; zz <= 1; zz++) {					for (int rr = -1; rr <= 1; rr++) {						for (int cc = -1; cc <= 1; cc++) {							int r2 = r + rr;							int c2 = c + cc;							int z2 = z + zz;							if (z2 < 0 || z2 >= voxel_data.size() || r2 < 0 || r2 >= voxel_data[z].rows || c2 < 0 || c2 >= voxel_data[z].cols) cnt++;							else if (voxel_data[z2](r2, c2) < threshold) cnt++;						}					}				}				if (cnt == 0) continue;								double nx = 0;				double ny = 0;				double nz = 0;				if (z == 0 || voxel_data[z - 1](r, c) < threshold) nz--;				if (z == voxel_data.size() - 1 || voxel_data[z + 1](r, c) < threshold) nz++;				if (r == 0 || voxel_data[z](r - 1, c) < threshold) ny--;				if (r == voxel_data[z].rows - 1 || voxel_data[z](r + 1, c) < threshold) ny++;				if (c == 0 || voxel_data[z](r, c - 1) < threshold) nx--;				if (c == voxel_data[z].cols - 1 || voxel_data[z](r, c + 1) < threshold) nx++;				if (nx == 0 && ny == 0 && nz == 0) nx = ny = nz = 1;				double len = sqrt(nx * nx + ny * ny + nz * nz);				nx /= len;				ny /= len;				nz /= len;				if (rand() % 10 < 7) continue;				glm::dvec3 pos((uniform_rand(c - 0.2, c + 0.2) - voxel_data[0].cols * 0.5) * voxel_size, (voxel_data[0].rows * 0.5 - uniform_rand(r - 0.2, r + 0.2)) * voxel_size, uniform_rand(z - 0.2, z + 0.2) * voxel_size);				glm::dvec3 normal(nx, -ny, nz);				point_cloud.push_back(std::make_pair(pos, normal));			}		}	}
 }
 
 void GLWidget3D::detect(double probability, double min_points, double epsilon, double cluster_epsilon, double normal_threshold) {
-	float min_x = std::numeric_limits<float>::max();
-	float min_y = std::numeric_limits<float>::max();
-	float min_z = std::numeric_limits<float>::max();
-	float max_x = -std::numeric_limits<float>::max();
-	float max_y = -std::numeric_limits<float>::max();
-	float max_z = -std::numeric_limits<float>::max();
+	double min_x = std::numeric_limits<double>::max();
+	double min_y = std::numeric_limits<double>::max();
+	double min_z = std::numeric_limits<double>::max();
+	double max_x = -std::numeric_limits<double>::max();
+	double max_y = -std::numeric_limits<double>::max();
+	double max_z = -std::numeric_limits<double>::max();
 	for (int i = 0; i < point_cloud.size(); i++) {
 		min_x = std::min(min_x, point_cloud[i].first.x);
 		min_y = std::min(min_y, point_cloud[i].first.y);
@@ -349,7 +349,7 @@ void GLWidget3D::detect(double probability, double min_points, double epsilon, d
 		max_y = std::max(max_y, point_cloud[i].first.y);
 		max_z = std::max(max_z, point_cloud[i].first.z);
 	}
-	float diagonal = std::sqrt((max_x - min_x) * (max_x - min_x) + (max_y - min_y) * (max_y - min_y) + (max_z - min_z) * (max_z - min_z));
+	double diagonal = std::sqrt((max_x - min_x) * (max_x - min_x) + (max_y - min_y) * (max_y - min_y) + (max_z - min_z) * (max_z - min_z));
 
 	pointcloud::shape::detect(point_cloud, probability, point_cloud.size() * 0.01 * min_points, diagonal * 0.01 * epsilon, diagonal * 0.01 * cluster_epsilon, normal_threshold, detected_faces);
 	std::cout << detected_faces.size() << " faces were detected." << std::endl;
@@ -367,7 +367,7 @@ void GLWidget3D::detect(double probability, double min_points, double epsilon, d
 	update3DGeometry();
 }
 
-void GLWidget3D::segment(float dilation_scale, float ratio_of_supporting_points_to_area) {
+void GLWidget3D::segment(double dilation_scale, double ratio_of_supporting_points_to_area) {
 	if (face_detected) {
 		segmented_faces = pointcloud::face_segmentation::segment(detected_faces, dilation_scale, ratio_of_supporting_points_to_area);
 
@@ -380,8 +380,8 @@ void GLWidget3D::segment(float dilation_scale, float ratio_of_supporting_points_
 	}
 }
 
-float GLWidget3D::uniform_rand(float a, float b) {
-	float r = (float)(rand() % 1000) / 1000;
+double GLWidget3D::uniform_rand(double a, double b) {
+	double r = (float)(rand() % 1000) / 1000;
 	return (b - a) * r + a;
 }
 

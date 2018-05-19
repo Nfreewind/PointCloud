@@ -277,7 +277,7 @@ namespace pointcloud {
 			}
 		}
 
-		void estimateNormals(std::vector<std::pair<glm::vec3, glm::vec3>>& input_points) {
+		void estimateNormals(std::vector<std::pair<glm::dvec3, glm::dvec3>>& input_points) {
 			std::vector<std::pair<Kernel::Point_3, Kernel::Vector_3>> points(input_points.size());
 
 			for (int i = 0; i < input_points.size(); i++) {
@@ -288,7 +288,9 @@ namespace pointcloud {
 			CGAL::pca_estimate_normals<CGAL::Sequential_tag>(points, nb_neighbors, CGAL::parameters::point_map(CGAL::First_of_pair_property_map<std::pair<Kernel::Point_3, Kernel::Vector_3>>()).normal_map(CGAL::Second_of_pair_property_map<std::pair<Kernel::Point_3, Kernel::Vector_3>>()));
 
 			for (int i = 0; i < input_points.size(); i++) {
-				input_points[i].second = glm::vec3(points[i].second.x(), points[i].second.y(), points[i].second.z());
+				glm::dvec3 estimated_normal(points[i].second.x(), points[i].second.y(), points[i].second.z());
+				if (glm::dot(input_points[i].second, estimated_normal) < 0) estimated_normal = -estimated_normal;
+				input_points[i].second = estimated_normal;
 			}
 		}
 

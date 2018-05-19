@@ -94,9 +94,7 @@ namespace pointcloud {
 					}
 
 					m_point_on_primitive = p1;
-					m_base1 = this->cross_pdct(this->constr_vec(p2, p1), m_normal);
-					m_base1 = this->scale(m_base1, ((FT)1.0 / CGAL::sqrt(this->sqlen(m_base1))));
-
+					m_base1 = Kernel::Vector_3(0, 0, 1);
 					m_base2 = this->cross_pdct(m_base1, m_normal);
 					m_base2 = this->scale(m_base2, ((FT)1.0 / CGAL::sqrt(this->sqlen(m_base2))));
 				}				this->m_is_valid = true;

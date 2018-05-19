@@ -53,6 +53,7 @@ public:
     QAction *actionUndo;
     QAction *actionUseRandomFaceColor;
     QAction *actionUseSameFaceColor;
+    QAction *actionRegularization;
     QWidget *centralWidget;
     QMenuBar *menuBar;
     QMenu *menuFile;
@@ -152,6 +153,8 @@ public:
         actionUseSameFaceColor = new QAction(MainWindowClass);
         actionUseSameFaceColor->setObjectName(QStringLiteral("actionUseSameFaceColor"));
         actionUseSameFaceColor->setCheckable(true);
+        actionRegularization = new QAction(MainWindowClass);
+        actionRegularization->setObjectName(QStringLiteral("actionRegularization"));
         centralWidget = new QWidget(MainWindowClass);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         MainWindowClass->setCentralWidget(centralWidget);
@@ -237,6 +240,7 @@ public:
         actionUndo->setShortcut(QApplication::translate("MainWindowClass", "Ctrl+Z", 0));
         actionUseRandomFaceColor->setText(QApplication::translate("MainWindowClass", "Use Random Color for Faces", 0));
         actionUseSameFaceColor->setText(QApplication::translate("MainWindowClass", "Use Same Color for Faces", 0));
+        actionRegularization->setText(QApplication::translate("MainWindowClass", "Regularization", 0));
         menuFile->setTitle(QApplication::translate("MainWindowClass", "File", 0));
         menuTool->setTitle(QApplication::translate("MainWindowClass", "Tool", 0));
         menuView->setTitle(QApplication::translate("MainWindowClass", "View", 0));

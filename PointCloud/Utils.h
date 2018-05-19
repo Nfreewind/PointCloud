@@ -97,7 +97,7 @@ namespace pointcloud {
 		void mark_domains(CDT& ct, CDT::Face_handle start, int index, std::list<CDT::Edge>& border);
 		void mark_domains(CDT& cdt);
 
-		void estimateNormals(std::vector<std::pair<glm::vec3, glm::vec3>>& points);
+		void estimateNormals(std::vector<std::pair<glm::dvec3, glm::dvec3>>& points);
 
 	}
 
