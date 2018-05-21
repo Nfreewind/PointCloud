@@ -59,11 +59,12 @@ public:
 
 	void drawScene();
 	void render();
-	void loadVoxelData(const QString& filename);
+	int loadVoxelData(const QString& filename);
 	void convertVDB2PointCloud(std::vector<cv::Mat_<uchar>>& voxel_data, std::vector<std::pair<glm::dvec3, glm::dvec3>>& point_cloud, int threshold, double voxel_size);
 	void saveVG(const QString& filename);
 	void detect(double probability, double min_points, double epsilon, double cluster_epsilon, double normal_threshold);
 	void segment(double dilation_scale, double ratio_of_supporting_points_to_area);
+	int downSample(double ratio);
 	double uniform_rand(double a, double b);
 	glm::vec4 getColor(int index);
 	glm::vec3 viewVector(const glm::vec2& point, const glm::mat4& mvMatrix, float focalLength, float aspect);

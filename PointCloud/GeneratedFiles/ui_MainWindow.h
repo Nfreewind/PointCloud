@@ -55,6 +55,7 @@ public:
     QAction *actionUseSameFaceColor;
     QAction *actionRegularization;
     QAction *actionSaveVG;
+    QAction *actionDownSample;
     QWidget *centralWidget;
     QMenuBar *menuBar;
     QMenu *menuFile;
@@ -161,6 +162,8 @@ public:
         QIcon icon3;
         icon3.addFile(QStringLiteral("Resources/save.png"), QSize(), QIcon::Normal, QIcon::Off);
         actionSaveVG->setIcon(icon3);
+        actionDownSample = new QAction(MainWindowClass);
+        actionDownSample->setObjectName(QStringLiteral("actionDownSample"));
         centralWidget = new QWidget(MainWindowClass);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         MainWindowClass->setCentralWidget(centralWidget);
@@ -197,6 +200,7 @@ public:
         menuTool->addAction(actionDetect);
         menuTool->addAction(actionSegment);
         menuTool->addSeparator();
+        menuTool->addAction(actionDownSample);
         menuTool->addAction(actionPrintDetectedFaces);
         menuView->addAction(actionShowPoints);
         menuView->addAction(actionShowFaces);
@@ -250,6 +254,7 @@ public:
         actionRegularization->setText(QApplication::translate("MainWindowClass", "Regularization", 0));
         actionSaveVG->setText(QApplication::translate("MainWindowClass", "Save VG", 0));
         actionSaveVG->setShortcut(QApplication::translate("MainWindowClass", "Ctrl+S", 0));
+        actionDownSample->setText(QApplication::translate("MainWindowClass", "Downsample (50%)", 0));
         menuFile->setTitle(QApplication::translate("MainWindowClass", "File", 0));
         menuTool->setTitle(QApplication::translate("MainWindowClass", "Tool", 0));
         menuView->setTitle(QApplication::translate("MainWindowClass", "View", 0));

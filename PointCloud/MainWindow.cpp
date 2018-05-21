@@ -28,6 +28,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 	connect(ui.actionUndo, SIGNAL(triggered()), this, SLOT(onUndo()));
 	connect(ui.actionDetect, SIGNAL(triggered()), this, SLOT(onDetect()));
 	connect(ui.actionSegment, SIGNAL(triggered()), this, SLOT(onSegment()));
+	connect(ui.actionDownSample, SIGNAL(triggered()), this, SLOT(onDownSample()));
 	connect(ui.actionPrintDetectedFaces, SIGNAL(triggered()), this, SLOT(onPrintDetectedFaces()));
 	connect(ui.actionShowPoints, SIGNAL(triggered()), this, SLOT(onShowChanged()));
 	connect(ui.actionShowFaces, SIGNAL(triggered()), this, SLOT(onShowChanged()));
@@ -59,7 +60,8 @@ void MainWindow::onOpen() {
 	if (filename.isEmpty()) return;
 
 	setWindowTitle("Point Cloud - " + filename);
-	glWidget->loadVoxelData(filename);
+	int num_points = glWidget->loadVoxelData(filename);
+	statusBar()->showMessage(QLocale(QLocale::English).toString(num_points) +" points were loaded");
 	glWidget->update();
 }
 
@@ -92,6 +94,12 @@ void MainWindow::onSegment() {
 		glWidget->segment(dlg.getDilationScale(), dlg.getMinSupportingPointsRatio());
 		glWidget->update();
 	}
+}
+
+void MainWindow::onDownSample() {
+	int num_points = glWidget->downSample(0.5);
+	statusBar()->showMessage(QLocale(QLocale::English).toString(num_points) + " points were loaded");
+	glWidget->update();
 }
 
 void MainWindow::onPrintDetectedFaces() {

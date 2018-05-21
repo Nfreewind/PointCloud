@@ -39,6 +39,7 @@
     <addaction name="actionDetect"/>
     <addaction name="actionSegment"/>
     <addaction name="separator"/>
+    <addaction name="actionDownSample"/>
     <addaction name="actionPrintDetectedFaces"/>
    </widget>
    <widget class="QMenu" name="menuView">
@@ -315,6 +316,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionDownSample">
+   <property name="text">
+    <string>Downsample (50%)</string>
    </property>
   </action>
  </widget>

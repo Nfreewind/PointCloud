@@ -23,6 +23,7 @@ public slots:
 	void onUndo();
 	void onDetect();
 	void onSegment();
+	void onDownSample();
 	void onPrintDetectedFaces();
 	void onShowChanged();
 	void onUseRandomFaceColor();
