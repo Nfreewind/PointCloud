@@ -61,6 +61,7 @@ public:
 	void render();
 	void loadVoxelData(const QString& filename);
 	void convertVDB2PointCloud(std::vector<cv::Mat_<uchar>>& voxel_data, std::vector<std::pair<glm::dvec3, glm::dvec3>>& point_cloud, int threshold, double voxel_size);
+	void saveVG(const QString& filename);
 	void detect(double probability, double min_points, double epsilon, double cluster_epsilon, double normal_threshold);
 	void segment(double dilation_scale, double ratio_of_supporting_points_to_area);
 	double uniform_rand(double a, double b);

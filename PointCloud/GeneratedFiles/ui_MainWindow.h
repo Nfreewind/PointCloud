@@ -54,6 +54,7 @@ public:
     QAction *actionUseRandomFaceColor;
     QAction *actionUseSameFaceColor;
     QAction *actionRegularization;
+    QAction *actionSaveVG;
     QWidget *centralWidget;
     QMenuBar *menuBar;
     QMenu *menuFile;
@@ -155,6 +156,11 @@ public:
         actionUseSameFaceColor->setCheckable(true);
         actionRegularization = new QAction(MainWindowClass);
         actionRegularization->setObjectName(QStringLiteral("actionRegularization"));
+        actionSaveVG = new QAction(MainWindowClass);
+        actionSaveVG->setObjectName(QStringLiteral("actionSaveVG"));
+        QIcon icon3;
+        icon3.addFile(QStringLiteral("Resources/save.png"), QSize(), QIcon::Normal, QIcon::Off);
+        actionSaveVG->setIcon(icon3);
         centralWidget = new QWidget(MainWindowClass);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         MainWindowClass->setCentralWidget(centralWidget);
@@ -185,6 +191,7 @@ public:
         menuBar->addAction(menuView->menuAction());
         menuBar->addAction(menuRendering->menuAction());
         menuFile->addAction(actionOpen);
+        menuFile->addAction(actionSaveVG);
         menuFile->addSeparator();
         menuFile->addAction(actionExit);
         menuTool->addAction(actionDetect);
@@ -241,6 +248,8 @@ public:
         actionUseRandomFaceColor->setText(QApplication::translate("MainWindowClass", "Use Random Color for Faces", 0));
         actionUseSameFaceColor->setText(QApplication::translate("MainWindowClass", "Use Same Color for Faces", 0));
         actionRegularization->setText(QApplication::translate("MainWindowClass", "Regularization", 0));
+        actionSaveVG->setText(QApplication::translate("MainWindowClass", "Save VG", 0));
+        actionSaveVG->setShortcut(QApplication::translate("MainWindowClass", "Ctrl+S", 0));
         menuFile->setTitle(QApplication::translate("MainWindowClass", "File", 0));
         menuTool->setTitle(QApplication::translate("MainWindowClass", "Tool", 0));
         menuView->setTitle(QApplication::translate("MainWindowClass", "View", 0));

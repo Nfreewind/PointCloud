@@ -12,7 +12,7 @@ namespace pointcloud {
 	class Face {
 	public:
 		int shape_id;
-		std::vector<glm::dvec3> points;
+		std::vector<std::pair<glm::dvec3, glm::dvec3>> points;
 		std::vector<std::vector<glm::dvec3>> triangles;
 		glm::dvec3 normal;
 		double d;
@@ -32,7 +32,7 @@ namespace pointcloud {
 
 			std::vector<Kernel::Point_2> projected_points;
 			for (int i = 0; i < points.size(); i++) {
-				projected_points.push_back(plane.to_2d(Kernel::Point_3(points[i].x, points[i].y, points[i].z)));
+				projected_points.push_back(plane.to_2d(Kernel::Point_3(points[i].first.x, points[i].first.y, points[i].first.z)));
 			}
 
 			try {

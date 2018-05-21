@@ -22,6 +22,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 	ui.actionShowPoints->setChecked(true);
 
 	connect(ui.actionOpen, SIGNAL(triggered()), this, SLOT(onOpen()));
+	connect(ui.actionSaveVG, SIGNAL(triggered()), this, SLOT(onSaveVG()));
 	connect(ui.actionExit, SIGNAL(triggered()), this, SLOT(close()));
 	connect(ui.actionDelete, SIGNAL(triggered()), this, SLOT(onDelete()));
 	connect(ui.actionUndo, SIGNAL(triggered()), this, SLOT(onUndo()));
@@ -38,6 +39,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 
 	// create tool bar for file menu
 	ui.mainToolBar->addAction(ui.actionOpen);
+	ui.mainToolBar->addAction(ui.actionSaveVG);
 	ui.mainToolBar->addSeparator();
 
 	// create tool bar for edit menu
@@ -59,6 +61,13 @@ void MainWindow::onOpen() {
 	setWindowTitle("Point Cloud - " + filename);
 	glWidget->loadVoxelData(filename);
 	glWidget->update();
+}
+
+void MainWindow::onSaveVG() {
+	QString filename = QFileDialog::getSaveFileName(this, tr("Save VG data..."), "", tr("VG files (*.vg)"));
+	if (filename.isEmpty()) return;
+
+	glWidget->saveVG(filename);
 }
 
 void MainWindow::onDelete() {

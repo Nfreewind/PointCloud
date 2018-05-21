@@ -18,6 +18,7 @@ public:
 
 public slots:
 	void onOpen();
+	void onSaveVG();
 	void onDelete();
 	void onUndo();
 	void onDetect();

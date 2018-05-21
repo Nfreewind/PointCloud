@@ -334,6 +334,66 @@ void GLWidget3D::convertVDB2PointCloud(std::vector<cv::Mat_<uchar>>& voxel_data,
 	for (int z = 0; z < voxel_data.size(); z++) {		for (int r = 0; r < voxel_data[z].rows; r++) {			for (int c = 0; c < voxel_data[z].cols; c++) {				if (voxel_data[z](r, c) < threshold) continue;				int cnt = 0;				for (int zz = -1; zz <= 1; zz++) {					for (int rr = -1; rr <= 1; rr++) {						for (int cc = -1; cc <= 1; cc++) {							int r2 = r + rr;							int c2 = c + cc;							int z2 = z + zz;							if (z2 < 0 || z2 >= voxel_data.size() || r2 < 0 || r2 >= voxel_data[z].rows || c2 < 0 || c2 >= voxel_data[z].cols) cnt++;							else if (voxel_data[z2](r2, c2) < threshold) cnt++;						}					}				}				if (cnt == 0) continue;								double nx = 0;				double ny = 0;				double nz = 0;				if (z == 0 || voxel_data[z - 1](r, c) < threshold) nz--;				if (z == voxel_data.size() - 1 || voxel_data[z + 1](r, c) < threshold) nz++;				if (r == 0 || voxel_data[z](r - 1, c) < threshold) ny--;				if (r == voxel_data[z].rows - 1 || voxel_data[z](r + 1, c) < threshold) ny++;				if (c == 0 || voxel_data[z](r, c - 1) < threshold) nx--;				if (c == voxel_data[z].cols - 1 || voxel_data[z](r, c + 1) < threshold) nx++;				if (nx == 0 && ny == 0 && nz == 0) nx = ny = nz = 1;				double len = sqrt(nx * nx + ny * ny + nz * nz);				nx /= len;				ny /= len;				nz /= len;				if (rand() % 10 < 7) continue;				glm::dvec3 pos((uniform_rand(c - 0.2, c + 0.2) - voxel_data[0].cols * 0.5) * voxel_size, (voxel_data[0].rows * 0.5 - uniform_rand(r - 0.2, r + 0.2)) * voxel_size, uniform_rand(z - 0.2, z + 0.2) * voxel_size);				glm::dvec3 normal(nx, -ny, nz);				point_cloud.push_back(std::make_pair(pos, normal));			}		}	}
 }
 
+void GLWidget3D::saveVG(const QString& filename) {
+	int total_points = 0;
+	for (int i = 0; i < detected_faces.size(); i++) {
+		total_points += detected_faces[i].points.size();
+	}
+
+	QFile file(filename);
+	file.open(QIODevice::WriteOnly);
+	QTextStream out(&file);
+
+	// write out coordinates of points
+	out << "num_points: " << total_points << endl;
+	for (int i = 0; i < detected_faces.size(); i++) {
+		for (int j = 0; j < detected_faces[i].points.size(); j++) {
+			out << detected_faces[i].points[j].first.x << " " << detected_faces[i].points[j].first.y << " " << detected_faces[i].points[j].first.z << endl;
+		}
+	}
+
+	// write out colors of points
+	out << "num_colors: " << total_points << endl;
+	for (int i = 0; i < detected_faces.size(); i++) {
+		glm::vec4 color = getColor(detected_faces[i].shape_id);
+		for (int j = 0; j < detected_faces[i].points.size(); j++) {
+			out << color.r << " " << color.g << " " << color.b << endl;
+		}
+	}
+
+	// write out normals of points
+	out << "num_points: " << total_points << endl;
+	for (int i = 0; i < detected_faces.size(); i++) {
+		for (int j = 0; j < detected_faces[i].points.size(); j++) {
+			out << detected_faces[i].points[j].second.x << " " << detected_faces[i].points[j].second.y << " " << detected_faces[i].points[j].second.z << endl;
+		}
+	}
+
+	// write out faces
+	out << "num_groups: " << detected_faces.size() << endl;
+	int point_idx = 0;
+	for (int i = 0; i < detected_faces.size(); i++) {
+		glm::vec4 color = getColor(detected_faces[i].shape_id);
+
+		out << "group_type: 0" << endl;
+		out << "num_group_parameters: 4" << endl;
+		out << "group_parameters: " << detected_faces[i].normal.x << " " << detected_faces[i].normal.y << " " << detected_faces[i].normal.z << " " << detected_faces[i].d << endl;
+		out << "group_label: unknown" << endl;
+		out << "group_color: " << color.r << " " << color.g << " " << color.b << endl;
+		out << "group_num_points: " << detected_faces[i].points.size() << endl;
+
+		for (int j = 0; j < detected_faces[i].points.size(); j++) {
+			if (j > 0) out << " ";
+			out << point_idx++;
+		}
+		out << endl;
+
+		out << "num_children: 0" << endl;
+	}
+
+	file.close();
+}
+
 void GLWidget3D::detect(double probability, double min_points, double epsilon, double cluster_epsilon, double normal_threshold) {
 	double min_x = std::numeric_limits<double>::max();
 	double min_y = std::numeric_limits<double>::max();
@@ -556,7 +616,7 @@ void GLWidget3D::update3DGeometry() {
 				if (show_points) {
 					std::vector<Vertex> vertices;
 					for (int j = 0; j < segmented_faces[i].points.size(); j++) {
-						glm::vec3 pos(segmented_faces[i].points[j]);
+						glm::vec3 pos(segmented_faces[i].points[j].first);
 						glutils::drawBox(0.3, 0.3, 0.3, color, glm::translate(glm::mat4(), pos), vertices);
 					}
 					renderManager.addObject("point_cloud", "", vertices, true);
@@ -579,7 +639,7 @@ void GLWidget3D::update3DGeometry() {
 				if (show_points) {
 					std::vector<Vertex> vertices;
 					for (int j = 0; j < detected_faces[i].points.size(); j++) {
-						glm::vec3 pos(detected_faces[i].points[j]);
+						glm::vec3 pos(detected_faces[i].points[j].first);
 						glutils::drawBox(0.3, 0.3, 0.3, color, glm::translate(glm::mat4(), pos), vertices);
 					}
 					renderManager.addObject("point_cloud", "", vertices, true);

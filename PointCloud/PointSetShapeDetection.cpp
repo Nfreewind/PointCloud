@@ -65,7 +65,7 @@ namespace pointcloud {
 				for (auto& index_it = (*it)->indices_of_assigned_points().begin(); index_it != (*it)->indices_of_assigned_points().end(); index_it++) {
 					// Retrieves point
 					Point_with_normal &p = *(points.begin() + (*index_it));
-					face.points.push_back(glm::dvec3(p.first.x(), p.first.y(), p.first.z()));
+					face.points.push_back({ glm::dvec3(p.first.x(), p.first.y(), p.first.z()), glm::dvec3(p.second.x(), p.second.y(), p.second.z()) });
 
 					if (p.second * Kernel::Vector_3(face.normal.x, face.normal.y, face.normal.z) >= 0) cnt_same_normal_direction++;
 				}
