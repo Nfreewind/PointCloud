@@ -17,7 +17,7 @@ namespace pointcloud {
 				// calculate the 2D coordinates of the points on the plane
 				std::vector<Point2> points_on_plane(faces[i].points.size());
 				for (int j = 0; j < faces[i].points.size(); j++) {
-					Point3 pt(faces[i].points[j].x, faces[i].points[j].y, faces[i].points[j].z);
+					Point3 pt(faces[i].points[j].first.x, faces[i].points[j].first.y, faces[i].points[j].first.z);
 					points_on_plane[j] = plane.to_2d(pt);
 				}
 				
@@ -131,7 +131,7 @@ namespace pointcloud {
 					for (auto& point_on_plane : points_on_plane) {
 						if (isInside(point_on_plane, polygons[j])) {
 							Point3 pt = plane.to_3d(point_on_plane);
-							face.points.push_back(glm::vec3(CGAL::to_double(pt.x()), CGAL::to_double(pt.y()), CGAL::to_double(pt.z())));
+							face.points.push_back({ glm::vec3(CGAL::to_double(pt.x()), CGAL::to_double(pt.y()), CGAL::to_double(pt.z())), glm::vec3() });
 						}
 					}
 					face.area = CGAL::to_double(area(polygons[j]));

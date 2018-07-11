@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'DetectOptionDialog.ui'
 **
-** Created by: Qt User Interface Compiler version 5.6.0
+** Created by: Qt User Interface Compiler version 5.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -102,18 +102,18 @@ public:
 
     void retranslateUi(QDialog *DetectOptionDialog)
     {
-        DetectOptionDialog->setWindowTitle(QApplication::translate("DetectOptionDialog", "DetectOptionDialog", 0));
-        label->setText(QApplication::translate("DetectOptionDialog", "Probability:", 0));
-        label_2->setText(QApplication::translate("DetectOptionDialog", "Min points:", 0));
-        label_3->setText(QApplication::translate("DetectOptionDialog", "Epsilon:", 0));
-        label_4->setText(QApplication::translate("DetectOptionDialog", "Cluster epsilon:", 0));
-        label_5->setText(QApplication::translate("DetectOptionDialog", "Normal threshold:", 0));
-        pushButtonOK->setText(QApplication::translate("DetectOptionDialog", "OK", 0));
-        pushButtonCancel->setText(QApplication::translate("DetectOptionDialog", "Cancel", 0));
-        label_7->setText(QApplication::translate("DetectOptionDialog", "% of total points", 0));
-        label_8->setText(QApplication::translate("DetectOptionDialog", "% of bbox diagonal", 0));
-        label_9->setText(QApplication::translate("DetectOptionDialog", "% of bbox diagonal", 0));
-        pushButtonDefault->setText(QApplication::translate("DetectOptionDialog", "Default Values", 0));
+        DetectOptionDialog->setWindowTitle(QApplication::translate("DetectOptionDialog", "DetectOptionDialog", Q_NULLPTR));
+        label->setText(QApplication::translate("DetectOptionDialog", "Probability:", Q_NULLPTR));
+        label_2->setText(QApplication::translate("DetectOptionDialog", "Min points:", Q_NULLPTR));
+        label_3->setText(QApplication::translate("DetectOptionDialog", "Epsilon:", Q_NULLPTR));
+        label_4->setText(QApplication::translate("DetectOptionDialog", "Cluster epsilon:", Q_NULLPTR));
+        label_5->setText(QApplication::translate("DetectOptionDialog", "Normal threshold:", Q_NULLPTR));
+        pushButtonOK->setText(QApplication::translate("DetectOptionDialog", "OK", Q_NULLPTR));
+        pushButtonCancel->setText(QApplication::translate("DetectOptionDialog", "Cancel", Q_NULLPTR));
+        label_7->setText(QApplication::translate("DetectOptionDialog", "% of total points", Q_NULLPTR));
+        label_8->setText(QApplication::translate("DetectOptionDialog", "% of bbox diagonal", Q_NULLPTR));
+        label_9->setText(QApplication::translate("DetectOptionDialog", "% of bbox diagonal", Q_NULLPTR));
+        pushButtonDefault->setText(QApplication::translate("DetectOptionDialog", "Default Values", Q_NULLPTR));
     } // retranslateUi
 
 };

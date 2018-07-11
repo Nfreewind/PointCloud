@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'SegmentOptionDialog.ui'
 **
-** Created by: Qt User Interface Compiler version 5.6.0
+** Created by: Qt User Interface Compiler version 5.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -69,12 +69,12 @@ public:
 
     void retranslateUi(QDialog *SegmentOptionDialog)
     {
-        SegmentOptionDialog->setWindowTitle(QApplication::translate("SegmentOptionDialog", "SegmentOptionDialog", 0));
-        label_2->setText(QApplication::translate("SegmentOptionDialog", "Min supporting ponts:", 0));
-        pushButtonOK->setText(QApplication::translate("SegmentOptionDialog", "OK", 0));
-        label_7->setText(QApplication::translate("SegmentOptionDialog", "(ratio to area)", 0));
-        label->setText(QApplication::translate("SegmentOptionDialog", "Dilation scale:", 0));
-        pushButtonCancel->setText(QApplication::translate("SegmentOptionDialog", "Cancel", 0));
+        SegmentOptionDialog->setWindowTitle(QApplication::translate("SegmentOptionDialog", "SegmentOptionDialog", Q_NULLPTR));
+        label_2->setText(QApplication::translate("SegmentOptionDialog", "Min supporting ponts:", Q_NULLPTR));
+        pushButtonOK->setText(QApplication::translate("SegmentOptionDialog", "OK", Q_NULLPTR));
+        label_7->setText(QApplication::translate("SegmentOptionDialog", "(ratio to area)", Q_NULLPTR));
+        label->setText(QApplication::translate("SegmentOptionDialog", "Dilation scale:", Q_NULLPTR));
+        pushButtonCancel->setText(QApplication::translate("SegmentOptionDialog", "Cancel", Q_NULLPTR));
     } // retranslateUi
 
 };

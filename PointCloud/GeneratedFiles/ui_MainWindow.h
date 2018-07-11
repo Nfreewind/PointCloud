@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'MainWindow.ui'
 **
-** Created by: Qt User Interface Compiler version 5.6.0
+** Created by: Qt User Interface Compiler version 5.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -220,46 +220,46 @@ public:
 
     void retranslateUi(QMainWindow *MainWindowClass)
     {
-        MainWindowClass->setWindowTitle(QApplication::translate("MainWindowClass", "Point Cloud", 0));
-        actionOpen->setText(QApplication::translate("MainWindowClass", "Open", 0));
-        actionOpen->setShortcut(QApplication::translate("MainWindowClass", "Ctrl+O", 0));
-        actionExit->setText(QApplication::translate("MainWindowClass", "Exit", 0));
-        actionDetect->setText(QApplication::translate("MainWindowClass", "Detect", 0));
-        actionShowPoints->setText(QApplication::translate("MainWindowClass", "Show Points", 0));
-        actionShowFaces->setText(QApplication::translate("MainWindowClass", "Show Faces", 0));
-        actionRenderingBasic->setText(QApplication::translate("MainWindowClass", "Basic", 0));
-        actionRenderingSSAO->setText(QApplication::translate("MainWindowClass", "SSAO", 0));
-        actionRenderingHatching->setText(QApplication::translate("MainWindowClass", "Hatching", 0));
-        actionSegment->setText(QApplication::translate("MainWindowClass", "Segment", 0));
-        actionShow1->setText(QApplication::translate("MainWindowClass", "Show 1", 0));
-        actionShow2->setText(QApplication::translate("MainWindowClass", "Show 2", 0));
-        actionShow3->setText(QApplication::translate("MainWindowClass", "Show 3", 0));
-        actionShow4->setText(QApplication::translate("MainWindowClass", "Show 4", 0));
-        actionShow5->setText(QApplication::translate("MainWindowClass", "Show 5", 0));
-        actionShow6->setText(QApplication::translate("MainWindowClass", "Show 6", 0));
-        actionShow7->setText(QApplication::translate("MainWindowClass", "Show 7", 0));
-        actionShow8->setText(QApplication::translate("MainWindowClass", "Show 8", 0));
-        actionShow9->setText(QApplication::translate("MainWindowClass", "Show 9", 0));
-        actionShowAll->setText(QApplication::translate("MainWindowClass", "Show All", 0));
-        actionShow10->setText(QApplication::translate("MainWindowClass", "Show 10", 0));
-        actionShow11->setText(QApplication::translate("MainWindowClass", "Show 11", 0));
-        actionShow12->setText(QApplication::translate("MainWindowClass", "Show 12", 0));
-        actionPrintDetectedFaces->setText(QApplication::translate("MainWindowClass", "Print Detected Faces", 0));
-        actionDelete->setText(QApplication::translate("MainWindowClass", "Delete", 0));
-        actionDelete->setShortcut(QApplication::translate("MainWindowClass", "Del", 0));
-        actionUndo->setText(QApplication::translate("MainWindowClass", "Undo", 0));
-        actionUndo->setShortcut(QApplication::translate("MainWindowClass", "Ctrl+Z", 0));
-        actionUseRandomFaceColor->setText(QApplication::translate("MainWindowClass", "Use Random Color for Faces", 0));
-        actionUseSameFaceColor->setText(QApplication::translate("MainWindowClass", "Use Same Color for Faces", 0));
-        actionRegularization->setText(QApplication::translate("MainWindowClass", "Regularization", 0));
-        actionSaveVG->setText(QApplication::translate("MainWindowClass", "Save VG", 0));
-        actionSaveVG->setShortcut(QApplication::translate("MainWindowClass", "Ctrl+S", 0));
-        actionDownSample->setText(QApplication::translate("MainWindowClass", "Downsample (50%)", 0));
-        menuFile->setTitle(QApplication::translate("MainWindowClass", "File", 0));
-        menuTool->setTitle(QApplication::translate("MainWindowClass", "Tool", 0));
-        menuView->setTitle(QApplication::translate("MainWindowClass", "View", 0));
-        menuRendering->setTitle(QApplication::translate("MainWindowClass", "Rendering", 0));
-        menuEdit->setTitle(QApplication::translate("MainWindowClass", "Edit", 0));
+        MainWindowClass->setWindowTitle(QApplication::translate("MainWindowClass", "Point Cloud", Q_NULLPTR));
+        actionOpen->setText(QApplication::translate("MainWindowClass", "Open", Q_NULLPTR));
+        actionOpen->setShortcut(QApplication::translate("MainWindowClass", "Ctrl+O", Q_NULLPTR));
+        actionExit->setText(QApplication::translate("MainWindowClass", "Exit", Q_NULLPTR));
+        actionDetect->setText(QApplication::translate("MainWindowClass", "Detect", Q_NULLPTR));
+        actionShowPoints->setText(QApplication::translate("MainWindowClass", "Show Points", Q_NULLPTR));
+        actionShowFaces->setText(QApplication::translate("MainWindowClass", "Show Faces", Q_NULLPTR));
+        actionRenderingBasic->setText(QApplication::translate("MainWindowClass", "Basic", Q_NULLPTR));
+        actionRenderingSSAO->setText(QApplication::translate("MainWindowClass", "SSAO", Q_NULLPTR));
+        actionRenderingHatching->setText(QApplication::translate("MainWindowClass", "Hatching", Q_NULLPTR));
+        actionSegment->setText(QApplication::translate("MainWindowClass", "Segment", Q_NULLPTR));
+        actionShow1->setText(QApplication::translate("MainWindowClass", "Show 1", Q_NULLPTR));
+        actionShow2->setText(QApplication::translate("MainWindowClass", "Show 2", Q_NULLPTR));
+        actionShow3->setText(QApplication::translate("MainWindowClass", "Show 3", Q_NULLPTR));
+        actionShow4->setText(QApplication::translate("MainWindowClass", "Show 4", Q_NULLPTR));
+        actionShow5->setText(QApplication::translate("MainWindowClass", "Show 5", Q_NULLPTR));
+        actionShow6->setText(QApplication::translate("MainWindowClass", "Show 6", Q_NULLPTR));
+        actionShow7->setText(QApplication::translate("MainWindowClass", "Show 7", Q_NULLPTR));
+        actionShow8->setText(QApplication::translate("MainWindowClass", "Show 8", Q_NULLPTR));
+        actionShow9->setText(QApplication::translate("MainWindowClass", "Show 9", Q_NULLPTR));
+        actionShowAll->setText(QApplication::translate("MainWindowClass", "Show All", Q_NULLPTR));
+        actionShow10->setText(QApplication::translate("MainWindowClass", "Show 10", Q_NULLPTR));
+        actionShow11->setText(QApplication::translate("MainWindowClass", "Show 11", Q_NULLPTR));
+        actionShow12->setText(QApplication::translate("MainWindowClass", "Show 12", Q_NULLPTR));
+        actionPrintDetectedFaces->setText(QApplication::translate("MainWindowClass", "Print Detected Faces", Q_NULLPTR));
+        actionDelete->setText(QApplication::translate("MainWindowClass", "Delete", Q_NULLPTR));
+        actionDelete->setShortcut(QApplication::translate("MainWindowClass", "Del", Q_NULLPTR));
+        actionUndo->setText(QApplication::translate("MainWindowClass", "Undo", Q_NULLPTR));
+        actionUndo->setShortcut(QApplication::translate("MainWindowClass", "Ctrl+Z", Q_NULLPTR));
+        actionUseRandomFaceColor->setText(QApplication::translate("MainWindowClass", "Use Random Color for Faces", Q_NULLPTR));
+        actionUseSameFaceColor->setText(QApplication::translate("MainWindowClass", "Use Same Color for Faces", Q_NULLPTR));
+        actionRegularization->setText(QApplication::translate("MainWindowClass", "Regularization", Q_NULLPTR));
+        actionSaveVG->setText(QApplication::translate("MainWindowClass", "Save VG", Q_NULLPTR));
+        actionSaveVG->setShortcut(QApplication::translate("MainWindowClass", "Ctrl+S", Q_NULLPTR));
+        actionDownSample->setText(QApplication::translate("MainWindowClass", "Downsample (50%)", Q_NULLPTR));
+        menuFile->setTitle(QApplication::translate("MainWindowClass", "File", Q_NULLPTR));
+        menuTool->setTitle(QApplication::translate("MainWindowClass", "Tool", Q_NULLPTR));
+        menuView->setTitle(QApplication::translate("MainWindowClass", "View", Q_NULLPTR));
+        menuRendering->setTitle(QApplication::translate("MainWindowClass", "Rendering", Q_NULLPTR));
+        menuEdit->setTitle(QApplication::translate("MainWindowClass", "Edit", Q_NULLPTR));
     } // retranslateUi
 
 };

@@ -334,7 +334,48 @@ int GLWidget3D::loadVoxelData(const QString& filename) {
 void GLWidget3D::convertVDB2PointCloud(std::vector<cv::Mat_<uchar>>& voxel_data, std::vector<std::pair<glm::dvec3, glm::dvec3>>& point_cloud, int threshold, double voxel_size) {
 	point_cloud.clear();
 
-	for (int z = 0; z < voxel_data.size(); z++) {		for (int r = 0; r < voxel_data[z].rows; r++) {			for (int c = 0; c < voxel_data[z].cols; c++) {				if (voxel_data[z](r, c) < threshold) continue;				int cnt = 0;				for (int zz = -1; zz <= 1; zz++) {					for (int rr = -1; rr <= 1; rr++) {						for (int cc = -1; cc <= 1; cc++) {							int r2 = r + rr;							int c2 = c + cc;							int z2 = z + zz;							if (z2 < 0 || z2 >= voxel_data.size() || r2 < 0 || r2 >= voxel_data[z].rows || c2 < 0 || c2 >= voxel_data[z].cols) cnt++;							else if (voxel_data[z2](r2, c2) < threshold) cnt++;						}					}				}				if (cnt == 0) continue;								double nx = 0;				double ny = 0;				double nz = 0;				if (z == 0 || voxel_data[z - 1](r, c) < threshold) nz--;				if (z == voxel_data.size() - 1 || voxel_data[z + 1](r, c) < threshold) nz++;				if (r == 0 || voxel_data[z](r - 1, c) < threshold) ny--;				if (r == voxel_data[z].rows - 1 || voxel_data[z](r + 1, c) < threshold) ny++;				if (c == 0 || voxel_data[z](r, c - 1) < threshold) nx--;				if (c == voxel_data[z].cols - 1 || voxel_data[z](r, c + 1) < threshold) nx++;				if (nx == 0 && ny == 0 && nz == 0) nx = ny = nz = 1;				double len = sqrt(nx * nx + ny * ny + nz * nz);				nx /= len;				ny /= len;				nz /= len;				glm::dvec3 pos((uniform_rand(c - 0.2, c + 0.2) - voxel_data[0].cols * 0.5) * voxel_size, (voxel_data[0].rows * 0.5 - uniform_rand(r - 0.2, r + 0.2)) * voxel_size, uniform_rand(z - 0.2, z + 0.2) * voxel_size);				glm::dvec3 normal(nx, -ny, nz);				point_cloud.push_back(std::make_pair(pos, normal));			}		}	}
+	for (int z = 0; z < voxel_data.size(); z++) {
+		for (int r = 0; r < voxel_data[z].rows; r++) {
+			for (int c = 0; c < voxel_data[z].cols; c++) {
+				if (voxel_data[z](r, c) < threshold) continue;
+
+				int cnt = 0;
+				for (int zz = -1; zz <= 1; zz++) {
+					for (int rr = -1; rr <= 1; rr++) {
+						for (int cc = -1; cc <= 1; cc++) {
+							int r2 = r + rr;
+							int c2 = c + cc;
+							int z2 = z + zz;
+							if (z2 < 0 || z2 >= voxel_data.size() || r2 < 0 || r2 >= voxel_data[z].rows || c2 < 0 || c2 >= voxel_data[z].cols) cnt++;
+							else if (voxel_data[z2](r2, c2) < threshold) cnt++;
+						}
+					}
+				}
+				if (cnt == 0) continue;
+				
+				double nx = 0;
+				double ny = 0;
+				double nz = 0;
+				if (z == 0 || voxel_data[z - 1](r, c) < threshold) nz--;
+				if (z == voxel_data.size() - 1 || voxel_data[z + 1](r, c) < threshold) nz++;
+				if (r == 0 || voxel_data[z](r - 1, c) < threshold) ny--;
+				if (r == voxel_data[z].rows - 1 || voxel_data[z](r + 1, c) < threshold) ny++;
+				if (c == 0 || voxel_data[z](r, c - 1) < threshold) nx--;
+				if (c == voxel_data[z].cols - 1 || voxel_data[z](r, c + 1) < threshold) nx++;
+
+				if (nx == 0 && ny == 0 && nz == 0) nx = ny = nz = 1;
+
+				double len = sqrt(nx * nx + ny * ny + nz * nz);
+				nx /= len;
+				ny /= len;
+				nz /= len;
+
+				glm::dvec3 pos((uniform_rand(c - 0.2, c + 0.2) - voxel_data[0].cols * 0.5) * voxel_size, (voxel_data[0].rows * 0.5 - uniform_rand(r - 0.2, r + 0.2)) * voxel_size, uniform_rand(z - 0.2, z + 0.2) * voxel_size);
+				glm::dvec3 normal(nx, -ny, nz);
+				point_cloud.push_back(std::make_pair(pos, normal));
+			}
+		}
+	}
 }
 
 void GLWidget3D::saveVG(const QString& filename) {
